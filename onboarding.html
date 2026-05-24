@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Lookin — Get Started</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/onboarding.css" />
+</head>
+<body>
+<div class="ob-app" id="ob-app">
+
+  <!-- Top bar (hidden on step 1 and 5) -->
+  <div class="ob-topbar hidden" id="ob-topbar">
+    <button class="ob-back" id="ob-back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+      </svg>
+    </button>
+    <div class="ob-progress" id="ob-progress">
+      <div class="ob-progress-track">
+        <div class="ob-progress-fill" id="ob-progress-fill"></div>
+      </div>
+    </div>
+    <div class="ob-step-count" id="ob-step-count">1 / 3</div>
+  </div>
+
+  <!-- Step Container -->
+  <div class="ob-steps" id="ob-steps">
+
+    <!-- STEP 1: Welcome -->
+    <div class="ob-step active" id="ob-step-1">
+      <div class="ob-orb ob-orb-green"></div>
+      <div class="ob-orb ob-orb-purple"></div>
+      <div class="welcome-body">
+        <div class="welcome-logo">LOOKIN</div>
+        <div class="welcome-tagline">
+          <h1 class="welcome-headline">Find your fit,<br/><em>close to you.</em></h1>
+          <p class="welcome-sub">Your AI-powered guide to the best stores near you — personalized to your style.</p>
+        </div>
+        <div class="welcome-badges">
+          <div class="welcome-badge">
+            <span class="badge-icon">✦</span>
+            <span>AI-powered</span>
+          </div>
+          <div class="welcome-badge">
+            <span class="badge-icon">◎</span>
+            <span>Nearby stores</span>
+          </div>
+          <div class="welcome-badge">
+            <span class="badge-icon">◈</span>
+            <span>Your vibe</span>
+          </div>
+        </div>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-btn-primary" id="start-btn">Get Started</button>
+        <p class="ob-footnote">Already have an account? <span class="ob-link">Sign in</span></p>
+      </div>
+    </div>
+
+    <!-- STEP 2: Vibe Selection -->
+    <div class="ob-step" id="ob-step-2">
+      <div class="ob-step-header">
+        <h2 class="ob-headline">What's your<br/><em>vibe?</em></h2>
+        <p class="ob-subhead">Pick all that apply</p>
+      </div>
+      <div class="ob-scroll-area">
+        <div class="vibe-grid" id="vibe-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-btn-primary" id="step2-next" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Celeb Inspo -->
+    <div class="ob-step" id="ob-step-3">
+      <div class="ob-step-header">
+        <h2 class="ob-headline">Who inspires<br/><em>your style?</em></h2>
+        <p class="ob-subhead">Pick up to 3</p>
+      </div>
+      <div class="ob-scroll-area">
+        <div class="celeb-grid" id="celeb-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-btn-primary" id="step3-next" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Budget -->
+    <div class="ob-step" id="ob-step-4">
+      <div class="ob-step-header">
+        <h2 class="ob-headline">What's your<br/><em>budget per piece?</em></h2>
+        <p class="ob-subhead">We'll filter stores to match</p>
+      </div>
+      <div class="ob-scroll-area">
+        <div class="budget-list" id="budget-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-btn-primary" id="step4-next" disabled>Finish</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Done -->
+    <div class="ob-step" id="ob-step-5">
+      <div class="ob-orb ob-orb-green"></div>
+      <div class="ob-orb ob-orb-purple" style="opacity:0.5"></div>
+      <div class="done-body">
+        <div class="done-check" id="done-check">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="done-logo">LOOKIN</div>
+        <h2 class="done-headline">You're all set.</h2>
+        <p class="done-sub">Chuck knows your vibe. Let's find your next fit.</p>
+        <div class="done-vibes" id="done-vibes">
+          <!-- Selected vibes shown here -->
+        </div>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-btn-primary" id="finish-btn">Start Lookin →</button>
+      </div>
+    </div>
+
+  </div><!-- /ob-steps -->
+</div><!-- /ob-app -->
+
+<script src="js/onboarding.js"></script>
+</body>
+</html>
