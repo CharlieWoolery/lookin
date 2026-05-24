@@ -2,7 +2,7 @@
 
 An AI-powered fashion app that helps users find clothing at stores near them — personalized to their style.
 
-**[Live Demo →]()**
+**[Live Demo →](https://charliewoolery.github.io/lookin)**
 
 ![Lookin App](https://img.shields.io/badge/Status-Live-4ade80?style=flat-square) ![Built with Claude](https://img.shields.io/badge/AI-Anthropic%20Claude-7c3aed?style=flat-square)
 
@@ -60,4 +60,4 @@ Chuck maintains a conversation history array that gets sent to the Anthropic Mes
 
 ---
 
-Built by [Charlie Woolery](https://github.com/YOUR_USERNAME)
+Built by [Charlie Woolery](https://github.com/CharlieWoolery)
