@@ -13,6 +13,7 @@ const MOCK_STORES = [
     featuredItem: 'Mercer Hoodie',
     itemPrice: '$280',
     tags: ['Streetwear', 'Premium'],
+    lat: 33.9882, lng: -118.4714,
   },
   {
     id: 2,
@@ -27,6 +28,7 @@ const MOCK_STORES = [
     featuredItem: 'Detroit Jacket',
     itemPrice: '$220',
     tags: ['Streetwear', 'Workwear'],
+    lat: 33.9925, lng: -118.4740,
   },
   {
     id: 3,
@@ -41,6 +43,7 @@ const MOCK_STORES = [
     featuredItem: 'NB 990v6',
     itemPrice: '$260',
     tags: ['Vintage', 'Curated'],
+    lat: 33.9950, lng: -118.4785,
   },
   {
     id: 4,
@@ -55,6 +58,7 @@ const MOCK_STORES = [
     featuredItem: 'Rebuild Jacket',
     itemPrice: '$580',
     tags: ['Avant-Garde', 'Vintage'],
+    lat: 34.0005, lng: -118.4825,
   },
   {
     id: 5,
@@ -69,6 +73,7 @@ const MOCK_STORES = [
     featuredItem: 'Wilfred Blazer',
     itemPrice: '$198',
     tags: ['California', 'Old Money'],
+    lat: 33.9902, lng: -118.4730,
   },
   {
     id: 6,
@@ -83,6 +88,7 @@ const MOCK_STORES = [
     featuredItem: 'Nano Puff Jacket',
     itemPrice: '$249',
     tags: ['California', 'Outdoor'],
+    lat: 33.9960, lng: -118.4800,
   },
   {
     id: 7,
@@ -97,6 +103,7 @@ const MOCK_STORES = [
     featuredItem: 'U Crewneck Sweater',
     itemPrice: '$49.90',
     tags: ['Minimal', 'Old Money'],
+    lat: 33.9920, lng: -118.4752,
   },
   {
     id: 8,
@@ -111,6 +118,7 @@ const MOCK_STORES = [
     featuredItem: 'Ami Paris Crewneck',
     itemPrice: '$390',
     tags: ['Luxury', 'Avant-Garde'],
+    lat: 34.0082, lng: -118.4882,
   },
 ];
 
@@ -184,6 +192,53 @@ const INSPO_CARDS = [
     decorPos: { top: '-20px', right: '-20px' },
   },
 ];
+
+// ============ PROFILE LOOKUP TABLES ============
+const VIBE_META = {
+  'old-money':       { name: 'Old Money',        emoji: '⚓' },
+  'streetwear':      { name: 'Streetwear',        emoji: '🔥' },
+  'vintage':         { name: 'Vintage',           emoji: '📼' },
+  'california':      { name: 'California',        emoji: '🌴' },
+  'avant-garde':     { name: 'Avant-Garde',       emoji: '🎨' },
+  'gorpcore':        { name: 'Gorpcore',          emoji: '🏔️' },
+  'y2k':             { name: 'Y2K',               emoji: '💿' },
+  'dark-academia':   { name: 'Dark Academia',     emoji: '📚' },
+  'coastal-grandma': { name: 'Coastal Grandma',   emoji: '☀️' },
+  'workwear':        { name: 'Workwear',          emoji: '💼' },
+  'grunge':          { name: 'Grunge',            emoji: '🎸' },
+  'preppy':          { name: 'Preppy',            emoji: '🎾' },
+  'bohemian':        { name: 'Bohemian',          emoji: '🌻' },
+};
+
+const CELEB_META = {
+  'frank-ocean':   { name: 'Frank Ocean',         emoji: '🌊', style: 'Vintage · Artsy',          gradient: 'linear-gradient(145deg, #0a1828 0%, #0d3255 100%)' },
+  'asap-rocky':    { name: 'A$AP Rocky',           emoji: '🔱', style: 'Street · High Fashion',    gradient: 'linear-gradient(145deg, #1a0808 0%, #3d1010 100%)' },
+  'playboi-carti': { name: 'Playboi Carti',        emoji: '🦇', style: 'Avant-Garde · Punk',       gradient: 'linear-gradient(145deg, #0a0a0a 0%, #1c0a1c 100%)' },
+  'jacob-elordi':  { name: 'Jacob Elordi',         emoji: '☕', style: 'Old Money · Minimal',      gradient: 'linear-gradient(145deg, #1e1a10 0%, #3d3520 100%)' },
+  'tyler':         { name: 'Tyler, the Creator',   emoji: '🌿', style: 'Preppy · Eclectic',        gradient: 'linear-gradient(145deg, #0f1a0a 0%, #243d12 100%)' },
+  'timothee':      { name: 'Timothée Chalamet',    emoji: '🎬', style: 'Avant-Garde · Luxury',     gradient: 'linear-gradient(145deg, #0a0a18 0%, #18183a 100%)' },
+  'zendaya':       { name: 'Zendaya',              emoji: '✨', style: 'Glamour · Streetwear',     gradient: 'linear-gradient(145deg, #1a0a12 0%, #3d1030 100%)' },
+  'kendall':       { name: 'Kendall Jenner',       emoji: '🤍', style: 'Model Off-Duty · Minimal', gradient: 'linear-gradient(145deg, #1a1510 0%, #2d2518 100%)' },
+  'bad-bunny':     { name: 'Bad Bunny',            emoji: '🐰', style: 'Streetwear · Maximalist',  gradient: 'linear-gradient(145deg, #0a1020 0%, #1a2040 100%)' },
+  'hailey-bieber': { name: 'Hailey Bieber',        emoji: '🌸', style: 'Model Off-Duty · Clean',   gradient: 'linear-gradient(145deg, #1a1008 0%, #3d2c18 100%)' },
+  'pharrell':      { name: 'Pharrell Williams',    emoji: '🎧', style: 'Streetwear · Artsy',       gradient: 'linear-gradient(145deg, #0a1428 0%, #1428a0 100%)' },
+  'harry-styles':  { name: 'Harry Styles',         emoji: '🌈', style: 'Maximalist · Vintage',     gradient: 'linear-gradient(145deg, #1a0818 0%, #3d1040 100%)' },
+  'rihanna':       { name: 'Rihanna',              emoji: '💎', style: 'Bold · High Fashion',      gradient: 'linear-gradient(145deg, #1a0808 0%, #4d1010 100%)' },
+  'kanye':         { name: 'Kanye West',           emoji: '🎤', style: 'Minimalist · Avant-Garde', gradient: 'linear-gradient(145deg, #080808 0%, #1c1c1c 100%)' },
+  'sydney':        { name: 'Sydney Sweeney',       emoji: '🌻', style: 'California · Vintage',     gradient: 'linear-gradient(145deg, #201808 0%, #3d2c10 100%)' },
+  'sabrina':       { name: 'Sabrina Carpenter',    emoji: '🍒', style: 'Y2K · Feminine',           gradient: 'linear-gradient(145deg, #1a0818 0%, #3d1a30 100%)' },
+  'travis-scott':  { name: 'Travis Scott',         emoji: '🌵', style: 'Streetwear · Dark',        gradient: 'linear-gradient(145deg, #0a0818 0%, #1a1040 100%)' },
+  'billie-eilish': { name: 'Billie Eilish',        emoji: '🖤', style: 'Grunge · Oversized',       gradient: 'linear-gradient(145deg, #080e08 0%, #0a2010 100%)' },
+  'dev-patel':     { name: 'Dev Patel',            emoji: '🎭', style: 'Bohemian · Tailored',      gradient: 'linear-gradient(145deg, #180c04 0%, #3d2010 100%)' },
+};
+
+const BUDGET_META = {
+  'under-50':  { label: 'Under $50',   desc: 'Thrift & fast fashion' },
+  '50-150':    { label: '$50 – $150',  desc: 'Mid-range staples' },
+  '150-300':   { label: '$150 – $300', desc: 'Premium pieces' },
+  '300-500':   { label: '$300 – $500', desc: 'High-end & designer' },
+  'no-limit':  { label: 'No limit',    desc: 'Only the best' },
+};
 
 // Utility: get store by id
 function getStore(id) {

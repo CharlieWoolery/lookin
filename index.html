@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
@@ -39,7 +40,7 @@
     </nav>
 
     <!-- Scrollable Home Content -->
-    <main class="home-content">
+    <main class="home-content" id="home-content">
 
       <!-- Greeting -->
       <section class="greeting">
@@ -62,12 +63,20 @@
       <div class="section">
         <h2 class="section-title-standalone">Browse by vibe</h2>
         <div class="category-chips" id="category-chips">
-          <button class="chip active" data-vibe="all">All</button>
-          <button class="chip" data-vibe="old-money">Old Money</button>
-          <button class="chip" data-vibe="streetwear">Streetwear</button>
-          <button class="chip" data-vibe="vintage">Vintage</button>
-          <button class="chip" data-vibe="california">California</button>
-          <button class="chip" data-vibe="avant-garde">Avant-Garde</button>
+          <button class="chip active" data-vibe="all">✦ All</button>
+          <button class="chip" data-vibe="streetwear">🔥 Streetwear</button>
+          <button class="chip" data-vibe="old-money">⚓ Old Money</button>
+          <button class="chip" data-vibe="california">🌴 California</button>
+          <button class="chip" data-vibe="vintage">📼 Vintage</button>
+          <button class="chip" data-vibe="avant-garde">🎨 Avant-Garde</button>
+          <button class="chip" data-vibe="gorpcore">🏔️ Gorpcore</button>
+          <button class="chip" data-vibe="y2k">💿 Y2K</button>
+          <button class="chip" data-vibe="dark-academia">📚 Dark Academia</button>
+          <button class="chip" data-vibe="coastal-grandma">☀️ Coastal Grandma</button>
+          <button class="chip" data-vibe="workwear">💼 Workwear</button>
+          <button class="chip" data-vibe="grunge">🎸 Grunge</button>
+          <button class="chip" data-vibe="preppy">🎾 Preppy</button>
+          <button class="chip" data-vibe="bohemian">🌻 Bohemian</button>
         </div>
       </div>
 
@@ -126,6 +135,119 @@
       </button>
     </nav>
 
+    <!-- Profile Screen -->
+    <div class="profile-screen hidden" id="profile-screen">
+      <div class="profile-scroll">
+
+        <!-- Profile Header -->
+        <div class="profile-hero">
+          <div class="profile-avatar" id="profile-avatar">CW</div>
+          <div class="profile-hero-info">
+            <div class="profile-name" id="profile-name">Charlie W.</div>
+            <div class="profile-location">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+              </svg>
+              Venice, CA
+            </div>
+          </div>
+          <button class="profile-edit-btn" id="profile-edit-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.21c.39-.39.39-1.02 0-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+            </svg>
+            Edit style
+          </button>
+        </div>
+
+        <!-- My Vibe -->
+        <div class="profile-section">
+          <div class="profile-section-label">My Vibe</div>
+          <div class="profile-vibes" id="profile-vibes">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Style Inspo -->
+        <div class="profile-section">
+          <div class="profile-section-label">Style Inspo</div>
+          <div class="profile-celebs" id="profile-celebs">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Budget -->
+        <div class="profile-section">
+          <div class="profile-section-label">Budget Per Piece</div>
+          <div class="profile-budget-card" id="profile-budget">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="profile-section">
+          <div class="profile-section-label">Settings</div>
+          <div class="profile-settings-list">
+
+            <div class="profile-setting-row" id="setting-apikey">
+              <div class="profile-setting-left">
+                <div class="profile-setting-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="profile-setting-label">Chuck API Key</div>
+                  <div class="profile-setting-value" id="apikey-display">Not set</div>
+                </div>
+              </div>
+              <button class="profile-setting-action" onclick="openApiKeyEdit()">Change</button>
+            </div>
+
+            <div class="profile-setting-row">
+              <div class="profile-setting-left">
+                <div class="profile-setting-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="profile-setting-label">Location</div>
+                  <div class="profile-setting-value">Venice, CA</div>
+                </div>
+              </div>
+              <button class="profile-setting-action">Change</button>
+            </div>
+
+            <div class="profile-setting-row profile-setting-row--danger" onclick="handleSignOut()">
+              <div class="profile-setting-left">
+                <div class="profile-setting-icon profile-setting-icon--danger">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div class="profile-setting-label profile-setting-label--danger">Sign Out</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Lookin Pro -->
+        <div class="profile-pro-banner">
+          <div class="profile-pro-left">
+            <div class="profile-pro-badge">PRO</div>
+            <div>
+              <div class="profile-pro-title">Upgrade to Lookin Pro</div>
+              <div class="profile-pro-sub">Outfit builder · Photo search · No limits</div>
+            </div>
+          </div>
+          <div class="profile-pro-price">$4.99<span>/mo</span></div>
+        </div>
+
+        <div class="profile-bottom-spacer"></div>
+      </div>
+    </div>
+
     <!-- Chuck Chat Overlay -->
     <div class="chuck-overlay hidden" id="chuck-overlay">
       <div class="chuck-backdrop" id="chuck-backdrop"></div>
@@ -167,11 +289,18 @@
         <div class="store-results hidden" id="store-results">
           <div class="store-results-header">
             <span class="store-results-title">Nearby matches</span>
-            <span class="store-results-count" id="store-results-count">4 stores</span>
+            <div class="store-results-controls">
+              <span class="store-results-count" id="store-results-count">4 stores</span>
+              <button class="map-toggle-btn" id="map-toggle-btn" onclick="toggleMap()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Map
+              </button>
+            </div>
           </div>
           <div class="store-results-list" id="store-results-list">
             <!-- Populated by JS -->
           </div>
+          <div id="chuck-map" class="chuck-map hidden"></div>
         </div>
 
         <!-- Input Area -->
@@ -195,8 +324,10 @@
 
   </div><!-- /#app -->
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/data.js"></script>
   <script src="js/chuck.js"></script>
+  <script src="js/map.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

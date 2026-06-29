@@ -126,6 +126,7 @@ function openChuck() {
 
 function closeChuck() {
   chuckOverlay.classList.add('hidden');
+  resetMap();
 }
 
 function showChuckGreeting() {
@@ -207,6 +208,7 @@ function showStoreResults() {
   const items = getResultCards(4);
   storeList.innerHTML = '';
   storeCount.textContent = `${items.length} stores`;
+  setupMap(items);
 
   items.forEach((item, i) => {
     const card = document.createElement('div');
@@ -341,6 +343,107 @@ function bindInput() {
   chuckSend.addEventListener('click', () => sendMessage());
 }
 
+// ============ PROFILE ============
+let profileOpen = false;
+
+function openProfile() {
+  profileOpen = true;
+  $('profile-screen').classList.remove('hidden');
+  $('home-content').style.display = 'none';
+  $('nav-profile').classList.add('active');
+  $('nav-home').classList.remove('active');
+  renderProfile();
+}
+
+function closeProfile() {
+  profileOpen = false;
+  $('profile-screen').classList.add('hidden');
+  $('home-content').style.display = '';
+  $('nav-home').classList.add('active');
+  $('nav-profile').classList.remove('active');
+}
+
+function renderProfile() {
+  const raw = localStorage.getItem('lookin_profile');
+  const profile = raw ? JSON.parse(raw) : { vibes: [], inspo: [], budget: null };
+
+  // Vibes
+  const vibesEl = $('profile-vibes');
+  vibesEl.innerHTML = '';
+  if (profile.vibes && profile.vibes.length) {
+    profile.vibes.forEach(id => {
+      const meta = VIBE_META[id];
+      if (!meta) return;
+      const chip = document.createElement('div');
+      chip.className = 'profile-vibe-chip';
+      chip.innerHTML = `<span class="chip-emoji">${meta.emoji}</span>${meta.name}`;
+      vibesEl.appendChild(chip);
+    });
+  } else {
+    vibesEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">No vibes selected — <span style="color:var(--purple);cursor:pointer" onclick="goToOnboarding()">take the quiz</span></div>';
+  }
+
+  // Celebs
+  const celebsEl = $('profile-celebs');
+  celebsEl.innerHTML = '';
+  if (profile.inspo && profile.inspo.length) {
+    profile.inspo.forEach(id => {
+      const meta = CELEB_META[id];
+      if (!meta) return;
+      const card = document.createElement('div');
+      card.className = 'profile-celeb-card';
+      card.innerHTML = `
+        <div class="profile-celeb-thumb">
+          <div class="profile-celeb-bg" style="background:${meta.gradient};width:100%;height:100%;"></div>
+          <div class="profile-celeb-emoji">${meta.emoji}</div>
+        </div>
+        <div class="profile-celeb-name">${meta.name}</div>
+        <div class="profile-celeb-style">${meta.style}</div>
+      `;
+      celebsEl.appendChild(card);
+    });
+  } else {
+    celebsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:4px 0;">No inspo picked yet.</div>';
+  }
+
+  // Budget
+  const budgetEl = $('profile-budget');
+  const bMeta = profile.budget ? BUDGET_META[profile.budget] : null;
+  if (bMeta) {
+    budgetEl.innerHTML = `
+      <div>
+        <div class="profile-budget-label">${bMeta.label}</div>
+        <div class="profile-budget-desc">${bMeta.desc}</div>
+      </div>
+      <button class="profile-budget-change" onclick="goToOnboarding()">Change</button>
+    `;
+  } else {
+    budgetEl.innerHTML = `<div style="color:var(--text-muted);font-size:13px;">Not set — <span style="color:var(--purple);cursor:pointer" onclick="goToOnboarding()">take the quiz</span></div>`;
+  }
+
+  // API key display
+  const key = localStorage.getItem('lookin_api_key');
+  $('apikey-display').textContent = key
+    ? key.slice(0, 14) + '••••••••'
+    : 'Not set';
+}
+
+function openApiKeyEdit() {
+  setupModal.classList.remove('hidden');
+}
+
+function handleSignOut() {
+  if (confirm('Sign out and clear your style profile?')) {
+    localStorage.clear();
+    window.location.href = 'login.html';
+  }
+}
+
+function goToOnboarding() {
+  localStorage.removeItem('lookin_onboarded');
+  window.location.href = 'onboarding.html';
+}
+
 // ============ EVENT BINDINGS ============
 function bindEvents() {
   openChuckBar.addEventListener('click', openChuck);
@@ -349,6 +452,9 @@ function bindEvents() {
   chuckBackdrop.addEventListener('click', closeChuck);
   saveKeyBtn.addEventListener('click', saveApiKey);
   apiKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveApiKey(); });
+
+  $('nav-home').addEventListener('click', () => { if (profileOpen) closeProfile(); });
+  $('nav-profile').addEventListener('click', () => { if (!profileOpen) openProfile(); });
 
   bindChips();
   bindInput();

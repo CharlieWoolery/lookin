@@ -5,45 +5,116 @@ const VIBES = [
   {
     id: 'old-money',
     name: 'Old Money',
+    emoji: '⚓',
     desc: 'Quiet luxury, coastal prep',
     gradient: 'linear-gradient(145deg, #c9a96e 0%, #8b6520 40%, #4a3010 100%)',
   },
   {
     id: 'streetwear',
     name: 'Streetwear',
+    emoji: '🔥',
     desc: 'Heat, hype, and drip',
     gradient: 'linear-gradient(145deg, #0f0c29 0%, #1a1042 50%, #24243e 100%)',
   },
   {
     id: 'vintage',
     name: 'Vintage',
+    emoji: '📼',
     desc: 'Archive pieces, lived-in fits',
     gradient: 'linear-gradient(145deg, #7a5c38 0%, #4a3420 50%, #2c1e10 100%)',
   },
   {
     id: 'california',
     name: 'California',
+    emoji: '🌴',
     desc: 'Effortless West Coast cool',
     gradient: 'linear-gradient(145deg, #c84b00 0%, #9b1fa8 100%)',
   },
   {
     id: 'avant-garde',
     name: 'Avant-Garde',
+    emoji: '🎨',
     desc: 'Fashion-forward, no rules',
     gradient: 'linear-gradient(145deg, #06000e 0%, #250870 55%, #7c3aed 100%)',
+  },
+  {
+    id: 'gorpcore',
+    name: 'Gorpcore',
+    emoji: '🏔️',
+    desc: 'Technical gear as fashion',
+    gradient: 'linear-gradient(145deg, #0a140e 0%, #142418 50%, #1e3820 100%)',
+  },
+  {
+    id: 'y2k',
+    name: 'Y2K',
+    emoji: '💿',
+    desc: 'Early 2000s revival',
+    gradient: 'linear-gradient(145deg, #1c082e 0%, #3d1060 50%, #8820c0 100%)',
+  },
+  {
+    id: 'dark-academia',
+    name: 'Dark Academia',
+    emoji: '📚',
+    desc: 'Scholarly, moody, layered',
+    gradient: 'linear-gradient(145deg, #12080a 0%, #221418 50%, #3d2028 100%)',
+  },
+  {
+    id: 'coastal-grandma',
+    name: 'Coastal Grandma',
+    emoji: '☀️',
+    desc: 'Linen, relaxed, elegant',
+    gradient: 'linear-gradient(145deg, #0d1820 0%, #153040 50%, #1c4458 100%)',
+  },
+  {
+    id: 'workwear',
+    name: 'Workwear',
+    emoji: '💼',
+    desc: 'Elevated office style',
+    gradient: 'linear-gradient(145deg, #080c1a 0%, #101830 50%, #182240 100%)',
+  },
+  {
+    id: 'grunge',
+    name: 'Grunge',
+    emoji: '🎸',
+    desc: '90s inspired, distressed',
+    gradient: 'linear-gradient(145deg, #1a0a08 0%, #321412 50%, #4a1e1a 100%)',
+  },
+  {
+    id: 'preppy',
+    name: 'Preppy',
+    emoji: '🎾',
+    desc: 'Clean, collegiate',
+    gradient: 'linear-gradient(145deg, #060e24 0%, #0e1a42 50%, #162660 100%)',
+  },
+  {
+    id: 'bohemian',
+    name: 'Bohemian',
+    emoji: '🌻',
+    desc: 'Flowy, earthy, eclectic',
+    gradient: 'linear-gradient(145deg, #1a1205 0%, #3d2a0a 50%, #5c4015 100%)',
   },
 ];
 
 const CELEBS = [
-  { id: 'frank-ocean',   name: 'Frank Ocean',         style: 'Vintage · Artsy',          gradient: 'linear-gradient(145deg, #0a1828 0%, #0d3255 100%)' },
-  { id: 'asap-rocky',    name: 'A$AP Rocky',           style: 'Street · High Fashion',    gradient: 'linear-gradient(145deg, #1a0808 0%, #3d1010 100%)' },
-  { id: 'playboi-carti', name: 'Playboi Carti',        style: 'Avant-Garde · Punk',       gradient: 'linear-gradient(145deg, #0a0a0a 0%, #1c0a1c 100%)' },
-  { id: 'jacob-elordi',  name: 'Jacob Elordi',         style: 'Old Money · Minimal',      gradient: 'linear-gradient(145deg, #1e1a10 0%, #3d3520 100%)' },
-  { id: 'tyler',         name: 'Tyler, the Creator',   style: 'Preppy · Eclectic',        gradient: 'linear-gradient(145deg, #0f1a0a 0%, #243d12 100%)' },
-  { id: 'timothee',      name: 'Timothée Chalamet',    style: 'Avant-Garde · Luxury',     gradient: 'linear-gradient(145deg, #0a0a18 0%, #18183a 100%)' },
-  { id: 'zendaya',       name: 'Zendaya',              style: 'Glamour · Streetwear',     gradient: 'linear-gradient(145deg, #1a0a12 0%, #3d1030 100%)' },
-  { id: 'kendall',       name: 'Kendall Jenner',       style: 'Model Off-Duty · Minimal', gradient: 'linear-gradient(145deg, #1a1510 0%, #2d2518 100%)' },
-  { id: 'bad-bunny',     name: 'Bad Bunny',            style: 'Streetwear · Maximalist',  gradient: 'linear-gradient(145deg, #0a1020 0%, #1a2040 100%)' },
+  { id: 'frank-ocean',   name: 'Frank Ocean',         emoji: '🌊', style: 'Vintage · Artsy',           gradient: 'linear-gradient(145deg, #0a1828 0%, #0d3255 100%)' },
+  { id: 'asap-rocky',    name: 'A$AP Rocky',           emoji: '🔱', style: 'Street · High Fashion',     gradient: 'linear-gradient(145deg, #1a0808 0%, #3d1010 100%)' },
+  { id: 'playboi-carti', name: 'Playboi Carti',        emoji: '🦇', style: 'Avant-Garde · Punk',        gradient: 'linear-gradient(145deg, #0a0a0a 0%, #1c0a1c 100%)' },
+  { id: 'jacob-elordi',  name: 'Jacob Elordi',         emoji: '☕', style: 'Old Money · Minimal',       gradient: 'linear-gradient(145deg, #1e1a10 0%, #3d3520 100%)' },
+  { id: 'tyler',         name: 'Tyler, the Creator',   emoji: '🌿', style: 'Preppy · Eclectic',         gradient: 'linear-gradient(145deg, #0f1a0a 0%, #243d12 100%)' },
+  { id: 'timothee',      name: 'Timothée Chalamet',    emoji: '🎬', style: 'Avant-Garde · Luxury',      gradient: 'linear-gradient(145deg, #0a0a18 0%, #18183a 100%)' },
+  { id: 'zendaya',       name: 'Zendaya',              emoji: '✨', style: 'Glamour · Streetwear',      gradient: 'linear-gradient(145deg, #1a0a12 0%, #3d1030 100%)' },
+  { id: 'kendall',       name: 'Kendall Jenner',       emoji: '🤍', style: 'Model Off-Duty · Minimal',  gradient: 'linear-gradient(145deg, #1a1510 0%, #2d2518 100%)' },
+  { id: 'bad-bunny',     name: 'Bad Bunny',            emoji: '🐰', style: 'Streetwear · Maximalist',   gradient: 'linear-gradient(145deg, #0a1020 0%, #1a2040 100%)' },
+  { id: 'hailey-bieber', name: 'Hailey Bieber',        emoji: '🌸', style: 'Model Off-Duty · Clean',    gradient: 'linear-gradient(145deg, #1a1008 0%, #3d2c18 100%)' },
+  { id: 'pharrell',      name: 'Pharrell Williams',    emoji: '🎧', style: 'Streetwear · Artsy',        gradient: 'linear-gradient(145deg, #0a1428 0%, #1428a0 100%)' },
+  { id: 'harry-styles',  name: 'Harry Styles',         emoji: '🌈', style: 'Maximalist · Vintage',      gradient: 'linear-gradient(145deg, #1a0818 0%, #3d1040 100%)' },
+  { id: 'rihanna',       name: 'Rihanna',              emoji: '💎', style: 'Bold · High Fashion',       gradient: 'linear-gradient(145deg, #1a0808 0%, #4d1010 100%)' },
+  { id: 'kanye',         name: 'Kanye West',           emoji: '🎤', style: 'Minimalist · Avant-Garde',  gradient: 'linear-gradient(145deg, #080808 0%, #1c1c1c 100%)' },
+  { id: 'sydney',        name: 'Sydney Sweeney',       emoji: '🌻', style: 'California · Vintage',      gradient: 'linear-gradient(145deg, #201808 0%, #3d2c10 100%)' },
+  { id: 'sabrina',       name: 'Sabrina Carpenter',    emoji: '🍒', style: 'Y2K · Feminine',            gradient: 'linear-gradient(145deg, #1a0818 0%, #3d1a30 100%)' },
+  { id: 'travis-scott',  name: 'Travis Scott',         emoji: '🌵', style: 'Streetwear · Dark',         gradient: 'linear-gradient(145deg, #0a0818 0%, #1a1040 100%)' },
+  { id: 'billie-eilish', name: 'Billie Eilish',        emoji: '🖤', style: 'Grunge · Oversized',        gradient: 'linear-gradient(145deg, #080e08 0%, #0a2010 100%)' },
+  { id: 'dev-patel',     name: 'Dev Patel',            emoji: '🎭', style: 'Bohemian · Tailored',       gradient: 'linear-gradient(145deg, #180c04 0%, #3d2010 100%)' },
 ];
 
 const BUDGETS = [
@@ -82,6 +153,7 @@ function buildVibeGrid() {
     card.innerHTML = `
       <div class="vibe-card-bg" style="background:${v.gradient};"></div>
       <div class="vibe-card-content">
+        <span class="vibe-emoji">${v.emoji}</span>
         <div class="vibe-card-name">${v.name}</div>
         <div class="vibe-card-desc">${v.desc}</div>
       </div>
@@ -101,6 +173,7 @@ function buildCelebGrid() {
     card.innerHTML = `
       <div class="celeb-card-thumb">
         <div class="celeb-card-bg" style="background:${c.gradient}; width:100%; height:100%;"></div>
+        <div class="celeb-emoji">${c.emoji}</div>
         <div class="celeb-card-check">✓</div>
       </div>
       <div class="celeb-card-name">${c.name}</div>
