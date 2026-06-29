@@ -21,6 +21,8 @@ const greetingTime = $('greeting-time');
 const storesScroll = $('stores-scroll');
 const inspoGrid    = $('inspo-grid');
 const categoryChips= $('category-chips');
+const photoInput   = $('photo-input');
+const chuckPhotoBtn= $('chuck-photo-btn');
 
 let chuckOpened = false;
 
@@ -343,6 +345,91 @@ function bindInput() {
   chuckSend.addEventListener('click', () => sendMessage());
 }
 
+// ============ PHOTO UPLOAD ============
+function isProUser() {
+  return localStorage.getItem('lookin_is_pro') === 'true';
+}
+
+function handlePhotoBtn() {
+  if (!hasApiKey()) {
+    setupModal.classList.remove('hidden');
+    return;
+  }
+  if (!isProUser()) {
+    showPremiumModal();
+    return;
+  }
+  photoInput.click();
+}
+
+function addPhotoMessage(dataUrl) {
+  const wrap = document.createElement('div');
+  wrap.className = 'message user';
+  wrap.innerHTML = `
+    <div class="message-bubble message-bubble-photo">
+      <img src="${dataUrl}" class="message-photo" alt="Uploaded clothing photo" />
+      <span class="message-photo-caption">Find me something similar</span>
+    </div>
+  `;
+  chuckMsgs.appendChild(wrap);
+  scrollMessages();
+}
+
+async function handlePhotoSelected(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const dataUrl = e.target.result;
+    const [header, base64] = dataUrl.split(',');
+    const mimeType = header.match(/:(.*?);/)[1];
+
+    hideQuickReplies();
+    addPhotoMessage(dataUrl);
+    showTyping();
+
+    try {
+      const reply = await askChuckWithVision(base64, mimeType);
+      hideTyping();
+      if (!reply) return;
+
+      const showStores = shouldShowStores(reply);
+      const cleanText  = cleanReply(reply);
+      if (cleanText)   addMessage('chuck', cleanText);
+      if (showStores)  showStoreResults();
+
+    } catch (err) {
+      hideTyping();
+      if (err.message === 'NO_API_KEY' || err.message === 'BAD_KEY') {
+        setupModal.classList.remove('hidden');
+        clearApiKey();
+      } else if (err.message === 'RATE_LIMIT') {
+        addMessage('chuck', "Give it a sec — hit the rate limit. Try again in a moment.");
+      } else {
+        addMessage('chuck', "Couldn't read the photo right now. Try again.");
+        console.error('Vision error:', err);
+      }
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============ PREMIUM MODAL ============
+function showPremiumModal() {
+  $('premium-modal').classList.remove('hidden');
+}
+
+function hidePremiumModal() {
+  $('premium-modal').classList.add('hidden');
+}
+
+function activatePro() {
+  localStorage.setItem('lookin_is_pro', 'true');
+  hidePremiumModal();
+  // Small delay so the sheet closes before the file picker opens
+  setTimeout(() => photoInput.click(), 350);
+}
+
 // ============ PROFILE ============
 let profileOpen = false;
 
@@ -455,6 +542,13 @@ function bindEvents() {
 
   $('nav-home').addEventListener('click', () => { if (profileOpen) closeProfile(); });
   $('nav-profile').addEventListener('click', () => { if (!profileOpen) openProfile(); });
+
+  chuckPhotoBtn.addEventListener('click', handlePhotoBtn);
+  photoInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    photoInput.value = '';
+    if (file) handlePhotoSelected(file);
+  });
 
   bindChips();
   bindInput();

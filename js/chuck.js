@@ -97,6 +97,66 @@ async function askChuck(userMessage) {
   }
 }
 
+// ============ VISION API (photo upload) ============
+const VISION_SYSTEM = `You are Chuck, the AI fashion assistant for Lookin. A user has uploaded a photo of a clothing item for you to analyze.
+
+Your job:
+1. In 2-3 short sentences: describe the item (type, color, style, fit). Sound like a knowledgeable friend, not a product description.
+2. End your message with exactly: [SHOW_STORES]
+
+Rules: Keep it tight. No bullet points. Casual tone. Always end with [SHOW_STORES].`;
+
+async function askChuckWithVision(base64Data, mimeType) {
+  const key = getApiKey();
+  if (!key) throw new Error('NO_API_KEY');
+  if (isChuckThinking) return null;
+  isChuckThinking = true;
+
+  const userContent = [
+    {
+      type: 'image',
+      source: { type: 'base64', media_type: mimeType, data: base64Data },
+    },
+    {
+      type: 'text',
+      text: 'Analyze this clothing item. Describe the style, color, type of garment, and suggest where someone could find similar items at retail stores.',
+    },
+  ];
+
+  try {
+    const response = await fetch(ANTHROPIC_API_URL, {
+      method: 'POST',
+      headers: {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: CHUCK_MODEL,
+        max_tokens: 400,
+        system: VISION_SYSTEM,
+        messages: [{ role: 'user', content: userContent }],
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      if (response.status === 401) throw new Error('BAD_KEY');
+      if (response.status === 429) throw new Error('RATE_LIMIT');
+      throw new Error(err.error?.message || `API error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const reply = data.content[0].text;
+    conversationHistory.push({ role: 'assistant', content: reply });
+    return reply;
+
+  } finally {
+    isChuckThinking = false;
+  }
+}
+
 // Parse whether Chuck wants to show stores
 function shouldShowStores(reply) {
   return reply.includes('[SHOW_STORES]');
