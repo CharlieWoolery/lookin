@@ -6,7 +6,7 @@
   <title>Lookin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
@@ -33,7 +33,7 @@
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
         </svg>
-        Venice, CA
+        <span id="nav-location-text">Venice, CA</span>
       </div>
       <div class="nav-logo">LOOKIN</div>
       <div class="nav-avatar" id="nav-avatar">CW</div>
@@ -148,7 +148,7 @@
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
               </svg>
-              Venice, CA
+              <span id="profile-hero-location">Venice, CA</span>
             </div>
           </div>
           <button class="profile-edit-btn" id="profile-edit-btn">
@@ -212,10 +212,10 @@
                 </div>
                 <div>
                   <div class="profile-setting-label">Location</div>
-                  <div class="profile-setting-value">Venice, CA</div>
+                  <div class="profile-setting-value" id="profile-location-value">Venice, CA</div>
                 </div>
               </div>
-              <button class="profile-setting-action">Change</button>
+              <button class="profile-setting-action" onclick="showLocationScreen()">Change</button>
             </div>
 
             <div class="profile-setting-row profile-setting-row--danger" onclick="handleSignOut()">
@@ -248,6 +248,99 @@
       </div>
     </div>
 
+    <!-- Saved Screen -->
+    <div class="saved-screen hidden" id="saved-screen">
+      <div class="saved-scroll">
+
+        <!-- Sticky header + tabs -->
+        <div class="saved-header">
+          <h2 class="saved-title">Saved</h2>
+          <div class="saved-tabs">
+            <button class="saved-tab active" id="tab-stores">Saved Stores</button>
+            <button class="saved-tab" id="tab-outfits">
+              Outfit Builder
+              <span class="tab-pro-badge">PRO</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stores pane -->
+        <div class="saved-pane" id="saved-stores-pane">
+          <div id="saved-list"><!-- Populated by JS --></div>
+        </div>
+
+        <!-- Outfit Builder pane -->
+        <div class="saved-pane hidden" id="saved-outfits-pane">
+
+          <div class="outfit-slots-grid">
+            <!-- Top -->
+            <div class="outfit-slot">
+              <div class="outfit-slot-bg" style="background:linear-gradient(145deg,#0d1320,#192240)"></div>
+              <span class="outfit-slot-emoji">👕</span>
+              <div class="outfit-slot-label">Top</div>
+              <div class="outfit-slot-lock">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              </div>
+            </div>
+            <!-- Bottoms -->
+            <div class="outfit-slot">
+              <div class="outfit-slot-bg" style="background:linear-gradient(145deg,#0d1a0d,#142d14)"></div>
+              <span class="outfit-slot-emoji">👖</span>
+              <div class="outfit-slot-label">Bottoms</div>
+              <div class="outfit-slot-lock">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              </div>
+            </div>
+            <!-- Shoes -->
+            <div class="outfit-slot">
+              <div class="outfit-slot-bg" style="background:linear-gradient(145deg,#130d1a,#24103d)"></div>
+              <span class="outfit-slot-emoji">👟</span>
+              <div class="outfit-slot-label">Shoes</div>
+              <div class="outfit-slot-lock">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              </div>
+            </div>
+            <!-- Accessories -->
+            <div class="outfit-slot">
+              <div class="outfit-slot-bg" style="background:linear-gradient(145deg,#1a1409,#2d2214)"></div>
+              <span class="outfit-slot-emoji">💍</span>
+              <div class="outfit-slot-label">Accessories</div>
+              <div class="outfit-slot-lock">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total row -->
+          <div class="outfit-total-row">
+            <span class="outfit-total-label">Est. Total</span>
+            <div class="outfit-total-right">
+              <span class="outfit-total-locked">$• • •</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#6b7280"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            </div>
+          </div>
+
+          <!-- Upgrade card -->
+          <div class="outfit-upgrade-card">
+            <span class="upgrade-pro-badge">LOOKIN PRO</span>
+            <h3 class="upgrade-title">Unlock Outfit Builder</h3>
+            <ul class="upgrade-features">
+              <li>Build complete outfits from saved items</li>
+              <li>Track total cost per outfit</li>
+              <li>Share your builds</li>
+              <li>Photo search with AI matching</li>
+              <li>Unlimited saves</li>
+            </ul>
+            <button class="outfit-upgrade-btn" onclick="showPremiumModal()">Upgrade to Lookin Pro — $4.99/mo</button>
+            <div class="outfit-upgrade-fine-print">7 day free trial · Cancel anytime</div>
+          </div>
+
+        </div><!-- /saved-outfits-pane -->
+
+        <div class="bottom-spacer"></div>
+      </div>
+    </div>
+
     <!-- Chuck Chat Overlay -->
     <div class="chuck-overlay hidden" id="chuck-overlay">
       <div class="chuck-backdrop" id="chuck-backdrop"></div>
@@ -264,7 +357,7 @@
               </div>
               <div class="chuck-header-info">
                 <div class="chuck-name">Chuck</div>
-                <div class="chuck-status">AI Fashion Assistant · Venice, CA</div>
+                <div class="chuck-status" id="chuck-location">AI Fashion Assistant · Venice, CA</div>
               </div>
             </div>
             <button class="chuck-close" id="chuck-close">
@@ -353,6 +446,47 @@
       </div>
     </div>
 
+    <!-- Location Permission Screen -->
+    <div class="location-screen" id="location-screen">
+      <div class="location-orb location-orb-green"></div>
+      <div class="location-orb location-orb-purple"></div>
+
+      <!-- Default view: ask permission or manual -->
+      <div class="location-default-view" id="location-default-view">
+        <div class="location-pin-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="location-content">
+          <h1 class="location-headline">Where are you<br/><em>shopping?</em></h1>
+          <p class="location-sub">We'll find the best stores near you and personalize results to your vibe.</p>
+        </div>
+        <div class="location-actions">
+          <button class="location-enable-btn" id="location-enable-btn">Enable Location</button>
+          <button class="location-manual-btn" id="location-manual-btn">Enter city manually</button>
+        </div>
+      </div>
+
+      <!-- Manual entry view -->
+      <div class="location-manual-view hidden" id="location-manual-view">
+        <div class="location-content">
+          <h1 class="location-headline">Your city</h1>
+          <p class="location-sub">Type your city and we'll show stores near you.</p>
+        </div>
+        <div class="location-input-wrap">
+          <input
+            type="text"
+            id="location-city-input"
+            class="location-input"
+            placeholder="e.g. New York, NY"
+            autocomplete="off"
+          />
+          <button class="location-confirm-btn" id="location-confirm-btn">Confirm City</button>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /#app -->
 
   <script src="js/config.js"></script>
@@ -360,6 +494,7 @@
   <script src="js/data.js"></script>
   <script src="js/chuck.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/location.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

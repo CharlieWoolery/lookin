@@ -25,7 +25,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #000;
-  font-family: 'DM Sans', -apple-system, sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   color: var(--text-primary);
 }
@@ -171,12 +171,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .welcome-headline {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 38px;
-  line-height: 1.2;
-  font-weight: 400;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 44px;
+  line-height: 1.05;
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 14px;
+  letter-spacing: 0.01em;
 }
 
 .welcome-headline em {
@@ -188,7 +189,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   font-size: 15px;
   color: var(--text-secondary);
   line-height: 1.6;
-  font-weight: 400;
+  font-weight: 500;
   max-width: 320px;
 }
 
@@ -225,12 +226,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .ob-headline {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 32px;
-  line-height: 1.2;
-  font-weight: 400;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 38px;
+  line-height: 1.05;
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 8px;
+  letter-spacing: 0.01em;
 }
 
 .ob-headline em {
@@ -241,7 +243,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .ob-subhead {
   font-size: 14px;
   color: var(--text-muted);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 /* ============ SCROLL AREA ============ */
@@ -540,10 +542,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .done-headline {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 32px;
-  font-weight: 400;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 38px;
+  font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: 0.01em;
 }
 
 .done-sub {

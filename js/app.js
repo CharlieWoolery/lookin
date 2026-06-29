@@ -25,6 +25,40 @@ const photoInput   = $('photo-input');
 const chuckPhotoBtn= $('chuck-photo-btn');
 
 let chuckOpened = false;
+let savedOpen = false;
+
+// ============ SAVED STORES — STORAGE ============
+function getSavedStores() {
+  const raw = localStorage.getItem('lookin_saved_stores');
+  return raw ? JSON.parse(raw) : [];
+}
+
+function saveStore(item) {
+  const stores = getSavedStores();
+  const exists = stores.some(s => s.storeId === item.store.id && s.item === item.name);
+  if (exists) return;
+  stores.push({
+    storeId:    item.store.id,
+    name:       item.store.name,
+    gradient:   item.store.gradient,
+    priceRange: item.store.priceRange,
+    distance:   item.store.distance,
+    lat:        item.store.lat  || null,
+    lng:        item.store.lng  || null,
+    item:       item.name,
+    price:      item.price,
+    category:   item.category,
+    savedAt:    Date.now(),
+  });
+  localStorage.setItem('lookin_saved_stores', JSON.stringify(stores));
+}
+
+function unsaveStore(storeId, itemName) {
+  const stores = getSavedStores().filter(
+    s => !(s.storeId === storeId && s.item === itemName)
+  );
+  localStorage.setItem('lookin_saved_stores', JSON.stringify(stores));
+}
 
 // ============ INIT ============
 function init() {
@@ -38,6 +72,7 @@ function init() {
   populateStores();
   populateInspoGrid();
   bindEvents();
+  initLocation();
 
   if (!hasApiKey()) {
     setupModal.classList.remove('hidden');
@@ -51,7 +86,9 @@ function setGreeting() {
   if (h >= 12 && h < 17) msg = 'Good afternoon,';
   else if (h >= 17 && h < 21) msg = 'Good evening,';
   else if (h >= 21 || h < 5) msg = 'Late night,';
-  greetingTime.textContent = msg;
+
+  const loc = getSavedLocation ? getSavedLocation() : null;
+  greetingTime.textContent = loc ? `${msg} · ${loc.city}` : msg;
 }
 
 // ============ POPULATE HOME STORES ============
@@ -239,8 +276,18 @@ function showStoreResults() {
     card.querySelector('.btn-heart').addEventListener('click', e => {
       e.stopPropagation();
       const btn = e.currentTarget;
-      const saved = btn.classList.toggle('saved');
-      btn.textContent = saved ? '♥' : '♡';
+      const isSaved = btn.classList.toggle('saved');
+      btn.textContent = isSaved ? '♥' : '♡';
+      if (isSaved) {
+        saveStore(item);
+      } else {
+        unsaveStore(item.store.id, item.name);
+      }
+    });
+
+    card.querySelector('.btn-directions').addEventListener('click', e => {
+      e.stopPropagation();
+      openMapsDirections(item.store);
     });
 
     storeList.appendChild(card);
@@ -434,6 +481,7 @@ function activatePro() {
 let profileOpen = false;
 
 function openProfile() {
+  if (savedOpen) closeSaved();
   profileOpen = true;
   $('profile-screen').classList.remove('hidden');
   $('home-content').style.display = 'none';
@@ -493,26 +541,166 @@ function renderProfile() {
     celebsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:4px 0;">No inspo picked yet.</div>';
   }
 
-  // Budget
+  // Budget slider
   const budgetEl = $('profile-budget');
-  const bMeta = profile.budget ? BUDGET_META[profile.budget] : null;
-  if (bMeta) {
-    budgetEl.innerHTML = `
-      <div>
-        <div class="profile-budget-label">${bMeta.label}</div>
-        <div class="profile-budget-desc">${bMeta.desc}</div>
+  const savedBudgetIdx = profile.budget
+    ? Math.max(0, BUDGET_TIERS.findIndex(t => t.id === profile.budget))
+    : 1;
+  const initTier = BUDGET_TIERS[savedBudgetIdx];
+
+  budgetEl.innerHTML = `
+    <div class="budget-slider-wrap">
+      <input
+        type="range"
+        id="budget-range"
+        class="budget-range"
+        min="0" max="4" step="1"
+        value="${savedBudgetIdx}"
+      />
+      <div class="budget-tier-labels">
+        <span>Thrift</span>
+        <span>Mid</span>
+        <span>Premium</span>
+        <span>Designer</span>
+        <span>No Budget</span>
       </div>
-      <button class="profile-budget-change" onclick="goToOnboarding()">Change</button>
-    `;
-  } else {
-    budgetEl.innerHTML = `<div style="color:var(--text-muted);font-size:13px;">Not set — <span style="color:var(--purple);cursor:pointer" onclick="goToOnboarding()">take the quiz</span></div>`;
-  }
+    </div>
+    <div class="budget-selected-display">
+      <span class="budget-selected-name" id="budget-selected-name">${initTier.name}</span>
+      <span class="budget-selected-range" id="budget-selected-range">${initTier.range}</span>
+    </div>
+  `;
+
+  const rangeInput = $('budget-range');
+  updateBudgetSliderFill(rangeInput);
+  rangeInput.addEventListener('input', () => {
+    const idx = parseInt(rangeInput.value, 10);
+    const tier = BUDGET_TIERS[idx];
+    $('budget-selected-name').textContent = tier.name;
+    $('budget-selected-range').textContent = tier.range;
+    updateBudgetSliderFill(rangeInput);
+    saveBudgetTier(idx);
+  });
 
   // API key display
   const key = localStorage.getItem('lookin_api_key');
   $('apikey-display').textContent = key
     ? key.slice(0, 14) + '••••••••'
     : 'Not set';
+
+  // Location display
+  const locData = getSavedLocation ? getSavedLocation() : null;
+  const locEl = $('profile-location-value');
+  if (locEl) locEl.textContent = locData ? locData.city : 'Not set';
+
+  const heroLoc = $('profile-hero-location');
+  if (heroLoc) heroLoc.textContent = locData ? locData.city : 'Location not set';
+}
+
+// ============ MAPS ============
+function openMapsDirections(store) {
+  const url = (store.lat && store.lng)
+    ? `https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.name)}`;
+  window.open(url, '_blank');
+}
+
+// ============ SAVED SCREEN ============
+function openSaved() {
+  if (profileOpen) closeProfile();
+  savedOpen = true;
+  $('saved-screen').classList.remove('hidden');
+  $('home-content').style.display = 'none';
+  $('nav-saved').classList.add('active');
+  $('nav-home').classList.remove('active');
+  renderSavedStores();
+}
+
+function closeSaved() {
+  savedOpen = false;
+  $('saved-screen').classList.add('hidden');
+  $('home-content').style.display = '';
+  $('nav-home').classList.add('active');
+  $('nav-saved').classList.remove('active');
+}
+
+function switchSavedTab(tab) {
+  const isStores = tab === 'stores';
+  $('tab-stores').classList.toggle('active', isStores);
+  $('tab-outfits').classList.toggle('active', !isStores);
+  $('saved-stores-pane').classList.toggle('hidden', !isStores);
+  $('saved-outfits-pane').classList.toggle('hidden', isStores);
+}
+
+function renderSavedStores() {
+  const list = $('saved-list');
+  const stores = getSavedStores();
+
+  if (!stores.length) {
+    list.innerHTML = `
+      <div class="saved-empty">
+        <div class="saved-empty-icon">♡</div>
+        <div class="saved-empty-title">Nothing saved yet</div>
+        <div class="saved-empty-sub">Ask Chuck to find something and tap the heart on any store.</div>
+        <button class="saved-empty-btn" onclick="openChuck(); closeSaved()">Ask Chuck →</button>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = '';
+  stores.slice().reverse().forEach(entry => {
+    const card = document.createElement('div');
+    card.className = 'saved-card';
+    card.innerHTML = `
+      <div class="saved-card-thumb">
+        <div class="saved-card-thumb-bg" style="background:${entry.gradient}"></div>
+      </div>
+      <div class="saved-card-body">
+        <div class="saved-card-store">${entry.name}</div>
+        <div class="saved-card-item">${entry.item}</div>
+        <div class="saved-card-meta">
+          <span>${entry.distance}</span>
+          <span class="meta-dot"></span>
+          <span>${entry.priceRange}</span>
+          <span class="meta-dot"></span>
+          <span>${entry.price}</span>
+        </div>
+      </div>
+      <div class="saved-card-actions">
+        <button class="btn-directions-sm">Directions</button>
+        <button class="btn-unsave" aria-label="Unsave">♥</button>
+      </div>
+    `;
+
+    card.querySelector('.btn-directions-sm').addEventListener('click', () => {
+      openMapsDirections({ name: entry.name, lat: entry.lat, lng: entry.lng });
+    });
+
+    card.querySelector('.btn-unsave').addEventListener('click', () => {
+      unsaveStore(entry.storeId, entry.item);
+      card.style.transition = 'opacity 0.2s, transform 0.2s';
+      card.style.opacity = '0';
+      card.style.transform = 'translateX(12px)';
+      setTimeout(() => renderSavedStores(), 220);
+    });
+
+    list.appendChild(card);
+  });
+}
+
+function updateBudgetSliderFill(input) {
+  const pct = (parseFloat(input.value) / 4) * 100;
+  input.style.setProperty('--pct', `${pct}%`);
+}
+
+function saveBudgetTier(idx) {
+  const tier = BUDGET_TIERS[idx];
+  if (!tier) return;
+  const raw = localStorage.getItem('lookin_profile');
+  const profile = raw ? JSON.parse(raw) : { vibes: [], inspo: [], budget: null };
+  profile.budget = tier.id;
+  localStorage.setItem('lookin_profile', JSON.stringify(profile));
 }
 
 function openApiKeyEdit() {
@@ -540,8 +728,17 @@ function bindEvents() {
   saveKeyBtn.addEventListener('click', saveApiKey);
   apiKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveApiKey(); });
 
-  $('nav-home').addEventListener('click', () => { if (profileOpen) closeProfile(); });
+  $('nav-home').addEventListener('click', () => {
+    if (profileOpen) closeProfile();
+    if (savedOpen)   closeSaved();
+  });
+  $('nav-saved').addEventListener('click', () => {
+    if (!savedOpen) openSaved();
+  });
   $('nav-profile').addEventListener('click', () => { if (!profileOpen) openProfile(); });
+
+  $('tab-stores').addEventListener('click',  () => switchSavedTab('stores'));
+  $('tab-outfits').addEventListener('click', () => switchSavedTab('outfits'));
 
   chuckPhotoBtn.addEventListener('click', handlePhotoBtn);
   photoInput.addEventListener('change', e => {

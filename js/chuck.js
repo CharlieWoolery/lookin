@@ -26,6 +26,19 @@ let conversationHistory = [];
 let chuckApiKey = null;
 let isChuckThinking = false;
 
+function getSystemPrompt() {
+  let extra = '';
+  try {
+    const raw = localStorage.getItem('lookin_profile');
+    if (raw) {
+      const profile = JSON.parse(raw);
+      const tier = BUDGET_TIERS.find(t => t.id === profile.budget);
+      if (tier) extra = `\n\nUser's budget: ${tier.name} (${tier.range}) per piece. Prioritize stores and items in this price range.`;
+    }
+  } catch {}
+  return CHUCK_SYSTEM + extra;
+}
+
 function getApiKey() {
   if (!chuckApiKey) {
     chuckApiKey = localStorage.getItem('lookin_api_key');
@@ -74,7 +87,7 @@ async function askChuck(userMessage) {
       body: JSON.stringify({
         model: CHUCK_MODEL,
         max_tokens: 300,
-        system: CHUCK_SYSTEM,
+        system: getSystemPrompt(),
         messages: conversationHistory,
       }),
     });

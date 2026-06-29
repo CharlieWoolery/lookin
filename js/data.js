@@ -232,13 +232,13 @@ const CELEB_META = {
   'dev-patel':     { name: 'Dev Patel',            emoji: '🎭', style: 'Bohemian · Tailored',      gradient: 'linear-gradient(145deg, #180c04 0%, #3d2010 100%)' },
 };
 
-const BUDGET_META = {
-  'under-50':  { label: 'Under $50',   desc: 'Thrift & fast fashion' },
-  '50-150':    { label: '$50 – $150',  desc: 'Mid-range staples' },
-  '150-300':   { label: '$150 – $300', desc: 'Premium pieces' },
-  '300-500':   { label: '$300 – $500', desc: 'High-end & designer' },
-  'no-limit':  { label: 'No limit',    desc: 'Only the best' },
-};
+const BUDGET_TIERS = [
+  { id: 'thrift',    name: 'Thrift',    range: 'Under $30' },
+  { id: 'mid-range', name: 'Mid Range', range: '$30 – $100' },
+  { id: 'premium',   name: 'Premium',   range: '$100 – $300' },
+  { id: 'designer',  name: 'Designer',  range: '$300 – $800' },
+  { id: 'no-budget', name: 'No Budget', range: '$800+' },
+];
 
 // Utility: get store by id
 function getStore(id) {
