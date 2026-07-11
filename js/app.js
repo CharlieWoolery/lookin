@@ -290,6 +290,8 @@ function showStoreResults() {
       openMapsDirections(item.store);
     });
 
+    card.addEventListener('click', () => showStoreDetail(item));
+
     storeList.appendChild(card);
   });
 
@@ -299,6 +301,104 @@ function showStoreResults() {
   setTimeout(() => {
     storeResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, 100);
+}
+
+// ============ STORE DETAIL SHEET ============
+function showStoreDetail(item) {
+  const existing = $('store-detail-overlay');
+  if (existing) existing.remove();
+
+  const store = item.store;
+  const savedStores = getSavedStores();
+  const alreadySaved = savedStores.some(s => s.storeId === store.id && s.item === item.name);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'store-detail-overlay';
+  overlay.className = 'store-detail-overlay';
+  overlay.innerHTML = `
+    <div class="store-detail-backdrop" id="store-detail-backdrop"></div>
+    <div class="store-detail-panel">
+      <div class="store-detail-handle"></div>
+      <div class="store-detail-thumb">
+        <div class="store-detail-thumb-bg" style="background:${store.gradient}"></div>
+        <span class="store-detail-status-badge ${store.open ? 'open' : 'closed'}">${store.open ? 'OPEN' : 'CLOSED'}</span>
+      </div>
+      <div class="store-detail-body">
+        <div class="store-detail-top-row">
+          <div>
+            <div class="store-detail-name">${store.name}</div>
+            <div class="store-detail-meta">
+              <span>${store.distance}</span>
+              <span class="meta-dot"></span>
+              <span>${store.category}</span>
+              <span class="meta-dot"></span>
+              <span>★ ${store.rating}</span>
+              <span class="meta-dot"></span>
+              <span>${store.priceRange}</span>
+            </div>
+          </div>
+          <button class="store-detail-close" id="store-detail-close">✕</button>
+        </div>
+        <div class="store-detail-item-row">
+          <span class="store-detail-item-name">${item.name}</span>
+          <span class="store-detail-item-price">${item.price}</span>
+        </div>
+        <div class="store-detail-tip-box">
+          <div class="store-detail-tip-label">Chuck's Tip</div>
+          <div class="store-detail-tip-text">${store.tip || 'Ask staff for the latest arrivals.'}</div>
+        </div>
+        <div class="store-detail-actions">
+          <button class="store-detail-directions-btn" id="store-detail-dir">Get Directions</button>
+          <button class="store-detail-heart-btn ${alreadySaved ? 'saved' : ''}" id="store-detail-heart">${alreadySaved ? '♥' : '♡'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  $('app').appendChild(overlay);
+
+  requestAnimationFrame(() => overlay.classList.add('open'));
+
+  overlay.querySelector('#store-detail-backdrop').addEventListener('click', closeStoreDetail);
+  overlay.querySelector('#store-detail-close').addEventListener('click', closeStoreDetail);
+
+  overlay.querySelector('#store-detail-dir').addEventListener('click', () => {
+    openMapsDirections(store);
+  });
+
+  overlay.querySelector('#store-detail-heart').addEventListener('click', function() {
+    const isSaved = this.classList.toggle('saved');
+    this.textContent = isSaved ? '♥' : '♡';
+    if (isSaved) {
+      saveStore(item);
+      // sync the card heart in the list
+      const cards = storeList.querySelectorAll('.result-card');
+      cards.forEach(c => {
+        if (c.querySelector('.result-card-store')?.textContent === store.name &&
+            c.querySelector('.result-card-item')?.textContent === item.name) {
+          const h = c.querySelector('.btn-heart');
+          if (h) { h.classList.add('saved'); h.textContent = '♥'; }
+        }
+      });
+    } else {
+      unsaveStore(store.id, item.name);
+      const cards = storeList.querySelectorAll('.result-card');
+      cards.forEach(c => {
+        if (c.querySelector('.result-card-store')?.textContent === store.name &&
+            c.querySelector('.result-card-item')?.textContent === item.name) {
+          const h = c.querySelector('.btn-heart');
+          if (h) { h.classList.remove('saved'); h.textContent = '♡'; }
+        }
+      });
+    }
+  });
+}
+
+function closeStoreDetail() {
+  const overlay = $('store-detail-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  setTimeout(() => overlay.remove(), 380);
 }
 
 // ============ SEND MESSAGE ============
@@ -729,13 +829,18 @@ function bindEvents() {
   apiKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveApiKey(); });
 
   $('nav-home').addEventListener('click', () => {
+    closeChuck();
     if (profileOpen) closeProfile();
     if (savedOpen)   closeSaved();
   });
   $('nav-saved').addEventListener('click', () => {
+    closeChuck();
     if (!savedOpen) openSaved();
   });
-  $('nav-profile').addEventListener('click', () => { if (!profileOpen) openProfile(); });
+  $('nav-profile').addEventListener('click', () => {
+    closeChuck();
+    if (!profileOpen) openProfile();
+  });
 
   $('tab-stores').addEventListener('click',  () => switchSavedTab('stores'));
   $('tab-outfits').addEventListener('click', () => switchSavedTab('outfits'));

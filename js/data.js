@@ -14,6 +14,7 @@ const MOCK_STORES = [
     itemPrice: '$280',
     tags: ['Streetwear', 'Premium'],
     lat: 33.9882, lng: -118.4714,
+    tip: 'New collab drops hit the back wall on Fridays — get there early.',
   },
   {
     id: 2,
@@ -29,6 +30,7 @@ const MOCK_STORES = [
     itemPrice: '$220',
     tags: ['Streetwear', 'Workwear'],
     lat: 33.9925, lng: -118.4740,
+    tip: 'Duck canvas runs slim — size up one for the right fit.',
   },
   {
     id: 3,
@@ -44,6 +46,7 @@ const MOCK_STORES = [
     itemPrice: '$260',
     tags: ['Vintage', 'Curated'],
     lat: 33.9950, lng: -118.4785,
+    tip: 'Hidden door entrance — ask the guy behind the counter.',
   },
   {
     id: 4,
@@ -59,6 +62,7 @@ const MOCK_STORES = [
     itemPrice: '$580',
     tags: ['Avant-Garde', 'Vintage'],
     lat: 34.0005, lng: -118.4825,
+    tip: 'Weekend rack has archive pieces they rotate every Thursday.',
   },
   {
     id: 5,
@@ -74,6 +78,7 @@ const MOCK_STORES = [
     itemPrice: '$198',
     tags: ['California', 'Old Money'],
     lat: 33.9902, lng: -118.4730,
+    tip: 'New drops hit Tuesday mornings — sale rack is in the back.',
   },
   {
     id: 6,
@@ -89,6 +94,7 @@ const MOCK_STORES = [
     itemPrice: '$249',
     tags: ['California', 'Outdoor'],
     lat: 33.9960, lng: -118.4800,
+    tip: 'Ironclad repair guarantee — bring anything worn out and they fix it free.',
   },
   {
     id: 7,
@@ -104,6 +110,7 @@ const MOCK_STORES = [
     itemPrice: '$49.90',
     tags: ['Minimal', 'Old Money'],
     lat: 33.9920, lng: -118.4752,
+    tip: 'LifeWear line restocks Thursday mornings — go early for your size.',
   },
   {
     id: 8,
@@ -119,6 +126,7 @@ const MOCK_STORES = [
     itemPrice: '$390',
     tags: ['Luxury', 'Avant-Garde'],
     lat: 34.0082, lng: -118.4882,
+    tip: 'Staff can pull pieces from the stockroom not shown on the floor.',
   },
 ];
 
