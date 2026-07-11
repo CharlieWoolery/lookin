@@ -250,10 +250,15 @@ function showStoreResults() {
   setupMap(items);
 
   items.forEach((item, i) => {
+    const alreadySaved = getSavedStores().some(
+      s => s.storeId === item.store.id && s.item === item.name
+    );
+
     const card = document.createElement('div');
     card.className = 'result-card';
     card.style.animationDelay = `${i * 80}ms`;
     card.innerHTML = `
+      <button class="card-mini-heart ${alreadySaved ? 'saved' : ''}" aria-label="Save">${alreadySaved ? '♥' : '♡'}</button>
       <div class="result-card-thumb">
         <div class="result-card-thumb-bg" style="background: ${item.store.gradient};"></div>
       </div>
@@ -267,27 +272,14 @@ function showStoreResults() {
         </div>
         <div class="result-card-price">${item.price}</div>
       </div>
-      <div class="result-card-actions">
-        <button class="btn-directions">Directions</button>
-        <button class="btn-heart" aria-label="Save">♡</button>
-      </div>
     `;
 
-    card.querySelector('.btn-heart').addEventListener('click', e => {
+    card.querySelector('.card-mini-heart').addEventListener('click', e => {
       e.stopPropagation();
       const btn = e.currentTarget;
       const isSaved = btn.classList.toggle('saved');
       btn.textContent = isSaved ? '♥' : '♡';
-      if (isSaved) {
-        saveStore(item);
-      } else {
-        unsaveStore(item.store.id, item.name);
-      }
-    });
-
-    card.querySelector('.btn-directions').addEventListener('click', e => {
-      e.stopPropagation();
-      openMapsDirections(item.store);
+      if (isSaved) saveStore(item); else unsaveStore(item.store.id, item.name);
     });
 
     card.addEventListener('click', () => showStoreDetail(item));
@@ -357,7 +349,8 @@ function showStoreDetail(item) {
 
   $('app').appendChild(overlay);
 
-  requestAnimationFrame(() => overlay.classList.add('open'));
+  // Double rAF ensures CSS transition fires on mobile Safari
+  requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('open')));
 
   overlay.querySelector('#store-detail-backdrop').addEventListener('click', closeStoreDetail);
   overlay.querySelector('#store-detail-close').addEventListener('click', closeStoreDetail);
@@ -371,26 +364,17 @@ function showStoreDetail(item) {
     this.textContent = isSaved ? '♥' : '♡';
     if (isSaved) {
       saveStore(item);
-      // sync the card heart in the list
-      const cards = storeList.querySelectorAll('.result-card');
-      cards.forEach(c => {
-        if (c.querySelector('.result-card-store')?.textContent === store.name &&
-            c.querySelector('.result-card-item')?.textContent === item.name) {
-          const h = c.querySelector('.btn-heart');
-          if (h) { h.classList.add('saved'); h.textContent = '♥'; }
-        }
-      });
     } else {
       unsaveStore(store.id, item.name);
-      const cards = storeList.querySelectorAll('.result-card');
-      cards.forEach(c => {
-        if (c.querySelector('.result-card-store')?.textContent === store.name &&
-            c.querySelector('.result-card-item')?.textContent === item.name) {
-          const h = c.querySelector('.btn-heart');
-          if (h) { h.classList.remove('saved'); h.textContent = '♡'; }
-        }
-      });
     }
+    // sync the mini heart on the card
+    storeList.querySelectorAll('.result-card').forEach(c => {
+      if (c.querySelector('.result-card-store')?.textContent === store.name &&
+          c.querySelector('.result-card-item')?.textContent === item.name) {
+        const h = c.querySelector('.card-mini-heart');
+        if (h) { h.classList.toggle('saved', isSaved); h.textContent = isSaved ? '♥' : '♡'; }
+      }
+    });
   });
 }
 
