@@ -27,7 +27,7 @@ async function reverseGeocode(lat, lng) {
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`,
-      { headers: { 'Accept-Language': 'en' } }
+      { headers: { 'Accept-Language': 'en', 'User-Agent': 'Lookin-App/1.0' } }
     );
     const data = await res.json();
     const a = data.address || {};
@@ -99,28 +99,30 @@ function showManualEntry() {
 
 // ── Handlers ──────────────────────────────────────────
 
-async function handleEnableLocation() {
+function handleEnableLocation() {
   const btn = document.getElementById('location-enable-btn');
-  btn.textContent = 'Getting location…';
-  btn.disabled = true;
 
   if (!navigator.geolocation) {
     showManualEntry();
     return;
   }
 
+  btn.textContent = 'Getting location…';
+  btn.disabled = true;
+
   navigator.geolocation.getCurrentPosition(
-    async pos => {
+    function(pos) {
       btn.textContent = 'Finding your city…';
-      const { latitude: lat, longitude: lng } = pos.coords;
-      let city = await reverseGeocode(lat, lng);
-      if (!city) city = 'Your City';
-      saveLocationData(city, lat, lng);
-      applyLocation(city);
-      hideLocationScreen();
+      var lat = pos.coords.latitude;
+      var lng = pos.coords.longitude;
+      reverseGeocode(lat, lng).then(function(city) {
+        if (!city) city = 'Unknown City';
+        saveLocationData(city, lat, lng);
+        applyLocation(city);
+        hideLocationScreen();
+      });
     },
-    () => {
-      // Denied — fall back to manual
+    function(err) {
       btn.disabled = false;
       btn.textContent = 'Enable Location';
       showManualEntry();
