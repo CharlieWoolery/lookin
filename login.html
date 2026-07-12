@@ -595,6 +595,13 @@
       <button class="toggle-link" id="toggle-link" onclick="switchTab('signup')">Sign up free</button>
     </div>
 
+    <!-- Guest entry -->
+    <div style="text-align:center;margin-top:20px;padding-bottom:8px;">
+      <button onclick="continueAsGuest()" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:8px 16px;border-radius:var(--radius-full);transition:color 0.15s;font-family:inherit;letter-spacing:0.01em;">
+        Continue as guest →
+      </button>
+    </div>
+
   </div><!-- /scroll-body -->
 </div>
 
@@ -668,7 +675,14 @@
       localStorage.setItem('lookin_email', email);
       window.location.href = 'index.html';
     } catch (err) {
-      errEl.textContent = err.message || 'Sign in failed. Try again.';
+      if (isNetworkError(err)) {
+        signInLocally(email);
+        window.location.href = 'index.html';
+        return;
+      }
+      errEl.textContent = err.message === 'AUTH_REQUIRED'
+        ? 'Invalid email or password.'
+        : (err.message || 'Sign in failed. Try again.');
       errEl.style.display = 'block';
       btn.classList.remove('loading');
     }
@@ -696,18 +710,30 @@
       localStorage.setItem('lookin_email', email);
       window.location.href = 'onboarding.html';
     } catch (err) {
+      if (isNetworkError(err)) {
+        signInLocally(email);
+        window.location.href = 'onboarding.html';
+        return;
+      }
       errEl.textContent = err.message || 'Account creation failed. Try again.';
       errEl.style.display = 'block';
       btn.classList.remove('loading');
     }
   }
 
+  function continueAsGuest() {
+    signInLocally('');
+    window.location.href = localStorage.getItem('lookin_onboarded')
+      ? 'index.html'
+      : 'onboarding.html';
+  }
+
   function handleGoogle() {
-    alert('Google sign-in coming soon.');
+    continueAsGuest();
   }
 
   function handleApple() {
-    alert('Apple sign-in coming soon.');
+    continueAsGuest();
   }
 
   function shake(el) {

@@ -680,7 +680,15 @@ async function saveApiKey() {
     setupModal.classList.add('hidden');
     openChuck();
   } catch (err) {
-    errorEl.textContent   = err.message || 'Something went wrong. Try again.';
+    if (isNetworkError(err)) {
+      signInLocally(email);
+      setupModal.classList.add('hidden');
+      openChuck();
+      return;
+    }
+    errorEl.textContent   = err.message === 'AUTH_REQUIRED'
+      ? 'Invalid email or password.'
+      : (err.message || 'Something went wrong. Try again.');
     errorEl.style.display = 'block';
     saveKeyBtn.disabled    = false;
     setAuthModalMode(authModalMode);
