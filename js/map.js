@@ -1,6 +1,15 @@
 // ============ CHUCK MAP — Leaflet.js integration ============
 
-const VENICE_LATLNG = [33.9860, -118.4693];
+function _getUserLatLng() {
+  try {
+    const raw = localStorage.getItem('lookin_location');
+    if (raw) {
+      const loc = JSON.parse(raw);
+      if (loc.lat && loc.lng) return [loc.lat, loc.lng];
+    }
+  } catch {}
+  return [33.9860, -118.4693]; // last-resort default
+}
 
 let _map = null;
 let _markers = [];
@@ -84,9 +93,15 @@ function _initMap(items) {
       .addTo(_map)
       .bindPopup('<b>You</b>');
 
-    // Store pins
+    // Store pins — only place pins for stores with valid coordinates
     _markers = [];
+    const mappedPoints = [userLatLng];
+
     items.forEach((item, i) => {
+      if (!item.store.lat || !item.store.lng) {
+        _markers.push(null);
+        return;
+      }
       const num = i + 1;
       const storeIcon = L.divIcon({
         className: '',
@@ -98,25 +113,26 @@ function _initMap(items) {
 
       const marker = L.marker([item.store.lat, item.store.lng], { icon: storeIcon })
         .addTo(_map)
-        .bindPopup(`<b>${item.store.name}</b>${item.name} · ${item.store.distance}`);
+        .bindPopup(`<b>${item.store.name}</b><br>${item.name} · ${item.store.distance}`);
 
       marker.on('click', () => _onPinTap(i, marker));
       _markers.push(marker);
+      mappedPoints.push([item.store.lat, item.store.lng]);
     });
 
-    // Fit all markers in view
-    const points = [userLatLng, ...items.map(it => [it.store.lat, it.store.lng])];
-    _map.fitBounds(L.latLngBounds(points), { padding: [28, 28], maxZoom: 15 });
+    // Fit all plotted points in view
+    _map.fitBounds(L.latLngBounds(mappedPoints), { padding: [28, 28], maxZoom: 15 });
   }
 
+  const savedLatLng = _getUserLatLng();
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       pos => placeAll([pos.coords.latitude, pos.coords.longitude]),
-      ()  => placeAll(VENICE_LATLNG),
+      ()  => placeAll(savedLatLng),
       { timeout: 5000 }
     );
   } else {
-    placeAll(VENICE_LATLNG);
+    placeAll(savedLatLng);
   }
 }
 

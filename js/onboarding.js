@@ -143,6 +143,18 @@ const step3Next    = document.getElementById('step3-next');
 const step4Next    = document.getElementById('step4-next');
 const finishBtn    = document.getElementById('finish-btn');
 
+// ---- Helpers ----
+function getCelebInitials(name) {
+  return name.replace(/[$&'.,]/g, ' ')
+             .split(/[\s,]+/)
+             .filter(w => /[a-zA-Z]/.test(w))
+             .map(w => w.replace(/[^a-zA-Z]/g, '')[0] || '')
+             .filter(Boolean)
+             .slice(0, 2)
+             .join('')
+             .toUpperCase();
+}
+
 // ---- Build UI ----
 function buildVibeGrid() {
   const grid = document.getElementById('vibe-grid');
@@ -153,7 +165,6 @@ function buildVibeGrid() {
     card.innerHTML = `
       <div class="vibe-card-bg" style="background:${v.gradient};"></div>
       <div class="vibe-card-content">
-        <span class="vibe-emoji">${v.emoji}</span>
         <div class="vibe-card-name">${v.name}</div>
         <div class="vibe-card-desc">${v.desc}</div>
       </div>
@@ -173,7 +184,7 @@ function buildCelebGrid() {
     card.innerHTML = `
       <div class="celeb-card-thumb">
         <div class="celeb-card-bg" style="background:${c.gradient}; width:100%; height:100%;"></div>
-        <div class="celeb-emoji">${c.emoji}</div>
+        <div class="celeb-initials">${getCelebInitials(c.name)}</div>
         <div class="celeb-card-check">✓</div>
       </div>
       <div class="celeb-card-name">${c.name}</div>

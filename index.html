@@ -12,15 +12,19 @@
 </head>
 <body>
 
-  <!-- API Key Setup Modal -->
+  <!-- Auth Modal (sign-in / sign-up) -->
   <div id="setup-modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-logo">LOOKIN</div>
-      <h2 class="modal-title">Set up Chuck</h2>
-      <p class="modal-desc">Enter your Anthropic API key to power Chuck's AI responses. Your key stays on your device.</p>
-      <input type="password" id="api-key-input" class="modal-input" placeholder="sk-ant-api03-..." autocomplete="off" />
-      <button id="save-api-key" class="btn-primary">Let's go</button>
-      <p class="modal-hint">Stored locally in your browser · Never sent to our servers</p>
+      <h2 class="modal-title" id="auth-modal-title">Sign in to use Chuck</h2>
+      <p class="modal-desc" id="auth-modal-desc">Create a free account to chat with Chuck and save your favorite stores.</p>
+      <input type="email"    id="auth-email"    class="modal-input" placeholder="you@example.com" autocomplete="email" inputmode="email" />
+      <input type="password" id="auth-password" class="modal-input" placeholder="Password (8+ chars)" autocomplete="current-password" style="margin-top:8px" />
+      <p id="auth-error" style="color:#f87171;font-size:12px;margin:4px 0 0;display:none;text-align:left"></p>
+      <button id="save-api-key" class="btn-primary" style="margin-top:12px">Sign In</button>
+      <button id="auth-mode-toggle" class="modal-hint" style="background:none;border:none;color:var(--purple);cursor:pointer;padding:0;margin-top:6px;font-size:13px">
+        Don't have an account? Sign up free
+      </button>
     </div>
   </div>
 
@@ -64,19 +68,46 @@
         <h2 class="section-title-standalone">Browse by vibe</h2>
         <div class="category-chips" id="category-chips">
           <button class="chip active" data-vibe="all">✦ All</button>
-          <button class="chip" data-vibe="streetwear">🔥 Streetwear</button>
-          <button class="chip" data-vibe="old-money">⚓ Old Money</button>
-          <button class="chip" data-vibe="california">🌴 California</button>
-          <button class="chip" data-vibe="vintage">📼 Vintage</button>
-          <button class="chip" data-vibe="avant-garde">🎨 Avant-Garde</button>
-          <button class="chip" data-vibe="gorpcore">🏔️ Gorpcore</button>
-          <button class="chip" data-vibe="y2k">💿 Y2K</button>
-          <button class="chip" data-vibe="dark-academia">📚 Dark Academia</button>
-          <button class="chip" data-vibe="coastal-grandma">☀️ Coastal Grandma</button>
-          <button class="chip" data-vibe="workwear">💼 Workwear</button>
-          <button class="chip" data-vibe="grunge">🎸 Grunge</button>
-          <button class="chip" data-vibe="preppy">🎾 Preppy</button>
-          <button class="chip" data-vibe="bohemian">🌻 Bohemian</button>
+          <button class="chip" data-vibe="streetwear">Streetwear</button>
+          <button class="chip" data-vibe="old-money">Old Money</button>
+          <button class="chip" data-vibe="california">California</button>
+          <button class="chip" data-vibe="vintage">Vintage</button>
+          <button class="chip" data-vibe="avant-garde">Avant-Garde</button>
+          <button class="chip" data-vibe="gorpcore">Gorpcore</button>
+          <button class="chip" data-vibe="y2k">Y2K</button>
+          <button class="chip" data-vibe="dark-academia">Dark Academia</button>
+          <button class="chip" data-vibe="coastal-grandma">Coastal Grandma</button>
+          <button class="chip" data-vibe="workwear">Workwear</button>
+          <button class="chip" data-vibe="grunge">Grunge</button>
+          <button class="chip" data-vibe="preppy">Preppy</button>
+          <button class="chip" data-vibe="bohemian">Bohemian</button>
+        </div>
+      </div>
+
+      <!-- Trending Now — Outfit Cards -->
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title trending-section-title">
+            <span class="trending-up-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+            </span>
+            Trending Now
+          </h2>
+          <span class="section-link">See all</span>
+        </div>
+        <div class="trending-scroll" id="trending-scroll">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Trending Stores -->
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Hot Right Now</h2>
+          <span class="section-link">See all</span>
+        </div>
+        <div id="trending-stores-list">
+          <!-- Populated by JS -->
         </div>
       </div>
 
@@ -192,15 +223,14 @@
               <div class="profile-setting-left">
                 <div class="profile-setting-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" fill="currentColor"/>
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" fill="currentColor"/>
                   </svg>
                 </div>
                 <div>
-                  <div class="profile-setting-label">Chuck API Key</div>
-                  <div class="profile-setting-value" id="apikey-display">Not set</div>
+                  <div class="profile-setting-label">Account</div>
+                  <div class="profile-setting-value" id="apikey-display">Not signed in</div>
                 </div>
               </div>
-              <button class="profile-setting-action" onclick="openApiKeyEdit()">Change</button>
             </div>
 
             <div class="profile-setting-row">
@@ -490,6 +520,7 @@
   </div><!-- /#app -->
 
   <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/data.js"></script>
   <script src="js/chuck.js"></script>

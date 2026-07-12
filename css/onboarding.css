@@ -343,12 +343,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   transform: scale(1);
 }
 
-/* Vibe card emoji */
-.vibe-emoji {
-  display: block;
+/* Vibe card name — larger now that emoji is removed */
+.vibe-card-name {
+  font-family: 'Bebas Neue', sans-serif;
   font-size: 22px;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
   line-height: 1;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
 }
 
 /* ============ CELEB GRID ============ */
@@ -402,14 +404,18 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .celeb-card.selected .celeb-card-check { opacity: 1; transform: scale(1); }
 
-/* Celeb emoji centered over gradient thumbnail */
-.celeb-emoji {
+/* Celeb initials centered over gradient thumbnail */
+.celeb-initials {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
   pointer-events: none;
 }
 

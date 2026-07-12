@@ -476,6 +476,8 @@
         <button class="forgot-link">Forgot password?</button>
       </div>
 
+      <p id="login-error" style="color:#f87171;font-size:12px;margin:4px 0;display:none;text-align:left"></p>
+
       <button class="btn-primary" onclick="handleLogin()">
         <span class="btn-text">Sign In</span>
         <span class="btn-spinner"></span>
@@ -544,6 +546,8 @@
         </div>
       </div>
 
+      <p id="signup-error" style="color:#f87171;font-size:12px;margin:4px 0;display:none;text-align:left"></p>
+
       <button class="btn-primary" onclick="handleSignup()">
         <span class="btn-text">Create Account</span>
         <span class="btn-spinner"></span>
@@ -594,6 +598,7 @@
   </div><!-- /scroll-body -->
 </div>
 
+<script src="js/api.js"></script>
 <script>
   let current = 'login';
 
@@ -646,32 +651,55 @@
     btn.querySelector('svg').style.opacity = isHidden ? '0.45' : '1';
   }
 
-  function simulateLoading(btn, label, duration, callback) {
-    btn.classList.add('loading');
-    setTimeout(() => {
-      btn.classList.remove('loading');
-      if (callback) callback();
-    }, duration);
-  }
-
-  function handleLogin() {
-    const email = document.getElementById('login-email').value.trim();
+  async function handleLogin() {
+    const email    = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
+    const errEl    = document.getElementById('login-error');
+    errEl.style.display = 'none';
     if (!email || !password) return shake(document.querySelector('#panel-login .btn-primary'));
     const btn = document.querySelector('#panel-login .btn-primary');
-    simulateLoading(btn, 'Sign In', 1400, () => {
+    btn.classList.add('loading');
+    try {
+      const data = await apiRequest('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      setToken(data.token);
+      localStorage.setItem('lookin_email', email);
       window.location.href = 'index.html';
-    });
+    } catch (err) {
+      errEl.textContent = err.message || 'Sign in failed. Try again.';
+      errEl.style.display = 'block';
+      btn.classList.remove('loading');
+    }
   }
 
-  function handleSignup() {
-    const email = document.getElementById('signup-email').value.trim();
+  async function handleSignup() {
+    const email    = document.getElementById('signup-email').value.trim();
     const password = document.getElementById('signup-password').value;
+    const errEl    = document.getElementById('signup-error');
+    errEl.style.display = 'none';
     if (!email || !password) return shake(document.querySelector('#panel-signup .btn-primary'));
+    if (password.length < 8) {
+      errEl.textContent = 'Password must be at least 8 characters.';
+      errEl.style.display = 'block';
+      return;
+    }
     const btn = document.querySelector('#panel-signup .btn-primary');
-    simulateLoading(btn, 'Create Account', 1600, () => {
+    btn.classList.add('loading');
+    try {
+      const data = await apiRequest('/api/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      setToken(data.token);
+      localStorage.setItem('lookin_email', email);
       window.location.href = 'onboarding.html';
-    });
+    } catch (err) {
+      errEl.textContent = err.message || 'Account creation failed. Try again.';
+      errEl.style.display = 'block';
+      btn.classList.remove('loading');
+    }
   }
 
   function handleGoogle() {

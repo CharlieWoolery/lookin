@@ -61,6 +61,12 @@ function applyLocation(city) {
 
   // Greeting (reads from localStorage itself)
   if (typeof setGreeting === 'function') setGreeting();
+
+  // Refresh nearby stores for new city
+  if (typeof populateStores === 'function') populateStores();
+
+  // Clear Chuck conversation so next chat uses the new location's context
+  if (typeof resetConversation === 'function') resetConversation();
 }
 
 // ── Screen visibility ──────────────────────────────────

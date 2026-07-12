@@ -248,6 +248,89 @@ const BUDGET_TIERS = [
   { id: 'no-budget', name: 'No Budget', range: '$800+' },
 ];
 
+// ============ TRENDING OUTFITS ============
+const TRENDING_OUTFITS = [
+  {
+    id: 'old-money-summer',
+    name: 'Old Money Summer',
+    category: 'Old Money',
+    gradient: 'linear-gradient(145deg, #a08060 0%, #6e5030 50%, #4a3020 100%)',
+    prompt: 'I want the Old Money Summer look — linen trousers, polo shirts, and loafers.',
+  },
+  {
+    id: 'frank-ocean-fit',
+    name: 'Frank Ocean Fit',
+    category: 'R&B Drip',
+    gradient: 'linear-gradient(145deg, #0a1a30 0%, #0e2a50 50%, #184078 100%)',
+    prompt: 'I want a Frank Ocean-inspired fit — relaxed, artistic, vintage-leaning streetwear.',
+  },
+  {
+    id: 'y2k-revival',
+    name: 'Y2K Revival',
+    category: 'Y2K',
+    gradient: 'linear-gradient(145deg, #2d0845 0%, #6d1a9c 50%, #a020c8 100%)',
+    prompt: 'I want a Y2K Revival outfit — baby tees, low-rise jeans, and chrome accessories.',
+  },
+  {
+    id: 'gorpcore',
+    name: 'Gorpcore Hike',
+    category: 'Gorpcore',
+    gradient: 'linear-gradient(145deg, #182e10 0%, #2d5020 50%, #467838 100%)',
+    prompt: 'I want a Gorpcore hiking fit — technical fleece, cargo pants, and trail shoes.',
+  },
+  {
+    id: 'dark-academia',
+    name: 'Dark Academia',
+    category: 'Academia',
+    gradient: 'linear-gradient(145deg, #18100a 0%, #3d2814 50%, #5c3e20 100%)',
+    prompt: 'I want a Dark Academia look — tweed blazer, turtleneck, and Oxford shoes.',
+  },
+  {
+    id: 'clean-streetwear',
+    name: 'Clean Streetwear',
+    category: 'Streetwear',
+    gradient: 'linear-gradient(145deg, #0c1018 0%, #141e2c 50%, #1c2c42 100%)',
+    prompt: 'I want clean streetwear — oversized tee, wide-leg cargos, and clean sneakers.',
+  },
+  {
+    id: 'california-surf',
+    name: 'California Surf',
+    category: 'California',
+    gradient: 'linear-gradient(145deg, #0a3560 0%, #0c5090 50%, #1070c0 100%)',
+    prompt: 'I want a California surf look — board shorts, breezy linen shirt, and sandals.',
+  },
+  {
+    id: 'coastal-grandma',
+    name: 'Coastal Grandma',
+    category: 'Coastal',
+    gradient: 'linear-gradient(145deg, #8a6a42 0%, #6a5030 50%, #4e3c22 100%)',
+    prompt: 'I want the Coastal Grandma vibe — linen, natural tones, and woven accessories.',
+  },
+];
+
+// ============ TRENDING STORES CONFIG ============
+const TRENDING_STORES_CONFIG = [
+  { id: 1, hotLabel: 'Packed today' },
+  { id: 3, hotLabel: 'New drop just landed' },
+  { id: 5, hotLabel: '20% off this weekend' },
+  { id: 7, hotLabel: 'Most visited this week' },
+];
+
+// ============ BUDGET UTILS ============
+function dollarToTier(amount) {
+  amount = Number(amount) || 60;
+  if (amount < 30)   return { id: 'thrift',    name: 'Thrift',    range: 'Under $30' };
+  if (amount <= 100) return { id: 'mid-range', name: 'Mid Range', range: '$30–$100' };
+  if (amount <= 300) return { id: 'premium',   name: 'Premium',   range: '$100–$300' };
+  if (amount < 800)  return { id: 'designer',  name: 'Designer',  range: '$300–$800' };
+  return { id: 'no-budget', name: 'No Budget', range: '$800+' };
+}
+
+function tierIdToAmount(tierId) {
+  const map = { 'thrift': 20, 'mid-range': 60, 'premium': 180, 'designer': 450, 'no-budget': 800 };
+  return map[tierId] || 60;
+}
+
 // Utility: get store by id
 function getStore(id) {
   return MOCK_STORES.find(s => s.id === id);

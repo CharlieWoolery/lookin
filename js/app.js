@@ -3,7 +3,6 @@
 // ---- DOM refs ----
 const $ = id => document.getElementById(id);
 const setupModal   = $('setup-modal');
-const apiKeyInput  = $('api-key-input');
 const saveKeyBtn   = $('save-api-key');
 const openChuckBar = $('open-chuck');
 const openChuckNav = $('open-chuck-nav');
@@ -51,6 +50,7 @@ function saveStore(item) {
     savedAt:    Date.now(),
   });
   localStorage.setItem('lookin_saved_stores', JSON.stringify(stores));
+  syncSaveToBackend(item);
 }
 
 function unsaveStore(storeId, itemName) {
@@ -58,6 +58,7 @@ function unsaveStore(storeId, itemName) {
     s => !(s.storeId === storeId && s.item === itemName)
   );
   localStorage.setItem('lookin_saved_stores', JSON.stringify(stores));
+  syncUnsaveToBackend(storeId, itemName);
 }
 
 // ============ INIT ============
@@ -70,6 +71,8 @@ function init() {
 
   setGreeting();
   populateStores();
+  populateTrending();
+  populateTrendingStores();
   populateInspoGrid();
   bindEvents();
   initLocation();
@@ -95,12 +98,38 @@ function setGreeting() {
 function populateStores() {
   storesScroll.innerHTML = '';
   MOCK_STORES.slice(0, 6).forEach(store => {
+    const item = {
+      name:     store.featuredItem,
+      price:    store.itemPrice,
+      category: store.category,
+      store: {
+        id:         store.id,
+        name:       store.name,
+        distance:   store.distance,
+        category:   store.category,
+        priceRange: store.priceRange,
+        rating:     store.rating,
+        open:       store.open,
+        gradient:   store.gradient,
+        lat:        store.lat  || null,
+        lng:        store.lng  || null,
+        tip:        store.tip  || 'Ask staff about their latest arrivals.',
+      },
+    };
+
+    const alreadySaved = getSavedStores().some(
+      s => s.storeId === store.id && s.item === item.name
+    );
+
     const card = document.createElement('div');
     card.className = 'store-card-mini';
     card.innerHTML = `
       <div class="store-card-mini-thumb">
         <div class="store-card-mini-thumb-bg" style="background: ${store.gradient};"></div>
         <div class="store-card-mini-open${store.open ? '' : ' closed'}">${store.open ? 'OPEN' : 'CLOSED'}</div>
+        <button class="store-card-mini-heart ${alreadySaved ? 'saved' : ''}" aria-label="Save">
+          ${alreadySaved ? '♥' : '♡'}
+        </button>
       </div>
       <div class="store-card-mini-body">
         <div class="store-card-mini-name">${store.name}</div>
@@ -113,6 +142,16 @@ function populateStores() {
         </div>
       </div>
     `;
+
+    card.querySelector('.store-card-mini-heart').addEventListener('click', e => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      const isSaved = btn.classList.toggle('saved');
+      btn.textContent = isSaved ? '♥' : '♡';
+      if (isSaved) saveStore(item); else unsaveStore(store.id, item.name);
+    });
+
+    card.addEventListener('click', () => showStoreDetail(item));
     storesScroll.appendChild(card);
   });
 }
@@ -151,6 +190,160 @@ function populateInspoGrid() {
     });
     inspoGrid.appendChild(el);
   });
+}
+
+// ============ TRENDING OUTFITS ============
+function populateTrending() {
+  const scroll = $('trending-scroll');
+  if (!scroll) return;
+  scroll.innerHTML = '';
+
+  const savedOutfits = JSON.parse(localStorage.getItem('lookin_saved_outfits') || '[]');
+
+  TRENDING_OUTFITS.forEach(outfit => {
+    const isSaved = savedOutfits.includes(outfit.id);
+    const card = document.createElement('div');
+    card.className = 'trending-card';
+    card.innerHTML = `
+      <div class="trending-card-bg" style="background:${outfit.gradient}"></div>
+      <div class="trending-card-indicator">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+        Trending
+      </div>
+      <button class="trending-card-heart${isSaved ? ' saved' : ''}" aria-label="Save outfit">${isSaved ? '♥' : '♡'}</button>
+      <div class="trending-card-overlay">
+        <div class="trending-card-name">${outfit.name}</div>
+        <div class="trending-card-cat">${outfit.category}</div>
+      </div>
+    `;
+
+    card.querySelector('.trending-card-heart').addEventListener('click', e => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      const nowSaved = btn.classList.toggle('saved');
+      btn.textContent = nowSaved ? '♥' : '♡';
+      const saved = JSON.parse(localStorage.getItem('lookin_saved_outfits') || '[]');
+      if (nowSaved) {
+        if (!saved.includes(outfit.id)) saved.push(outfit.id);
+      } else {
+        const idx = saved.indexOf(outfit.id);
+        if (idx > -1) saved.splice(idx, 1);
+      }
+      localStorage.setItem('lookin_saved_outfits', JSON.stringify(saved));
+    });
+
+    card.addEventListener('click', () => loadOutfitIntoChuck(outfit));
+    scroll.appendChild(card);
+  });
+}
+
+function loadOutfitIntoChuck(outfit) {
+  resetConversation();
+  chuckMsgs.innerHTML = '';
+  hideQuickReplies();
+  chuckOpened = true;
+  openChuck();
+  setTimeout(() => sendMessage(outfit.prompt), 480);
+}
+
+// ============ TRENDING STORES ============
+function populateTrendingStores() {
+  const list = $('trending-stores-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  TRENDING_STORES_CONFIG.forEach((config, i) => {
+    const store = getStore(config.id);
+    if (!store) return;
+
+    const row = document.createElement('div');
+    row.className = 'trending-store-row';
+    row.style.animationDelay = `${i * 60}ms`;
+    row.innerHTML = `
+      <div class="trending-store-thumb">
+        <div class="trending-store-thumb-bg" style="background:${store.gradient}"></div>
+        <span class="trending-store-hot-badge">🔥 HOT</span>
+      </div>
+      <div class="trending-store-body">
+        <div class="trending-store-name">${store.name}</div>
+        <div class="trending-store-meta">
+          <span>${store.distance}</span>
+          <span class="meta-dot"></span>
+          <span>${store.category}</span>
+          <span class="meta-dot"></span>
+          <span>${store.priceRange}</span>
+        </div>
+        <div class="trending-store-hot-label">🔥 ${config.hotLabel}</div>
+      </div>
+      <span class="trending-store-open-pill${store.open ? '' : ' closed'}">${store.open ? 'Open' : 'Closed'}</span>
+    `;
+
+    row.addEventListener('click', () => {
+      openChuck();
+      setTimeout(() => {
+        hideQuickReplies();
+        sendMessage('Tell me about ' + store.name + ' — what should I get there?');
+      }, 480);
+    });
+
+    list.appendChild(row);
+  });
+}
+
+// ============ AI STORE HELPERS ============
+const STORE_GRADIENTS = [
+  'linear-gradient(145deg, #0f0c29 0%, #1a1042 50%, #24243e 100%)',
+  'linear-gradient(145deg, #1a1209 0%, #2c1f0e 50%, #3d2b14 100%)',
+  'linear-gradient(145deg, #0d1a0d 0%, #142814 50%, #1c3a1c 100%)',
+  'linear-gradient(145deg, #110a1a 0%, #2d1255 50%, #4c1d95 100%)',
+  'linear-gradient(145deg, #1a0a10 0%, #2d1020 50%, #3d1530 100%)',
+  'linear-gradient(145deg, #0a1508 0%, #142210 50%, #1c3018 100%)',
+  'linear-gradient(145deg, #0a0f1a 0%, #12192e 50%, #1a2540 100%)',
+  'linear-gradient(145deg, #1a1209 0%, #2a1e0c 50%, #3c2d16 100%)',
+];
+
+function gradientForStore(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (Math.imul(h, 31) + name.charCodeAt(i)) | 0;
+  return STORE_GRADIENTS[Math.abs(h) % STORE_GRADIENTS.length];
+}
+
+function buildStoreItems(aiStores) {
+  if (aiStores && aiStores.length > 0) {
+    return aiStores.slice(0, 4).map(s => ({
+      name:     s.item       || 'Featured Item',
+      price:    s.price      || '$—',
+      category: s.category   || 'Fashion',
+      store: {
+        id:         s.name,
+        name:       s.name,
+        distance:   s.distance   || 'Nearby',
+        category:   s.category   || 'Fashion',
+        priceRange: s.priceRange || s.price_range || '$$',
+        rating:     s.rating     || '4.7',
+        open:       s.open !== false,
+        gradient:   gradientForStore(s.name),
+        lat:        s.lat  || null,
+        lng:        s.lng  || null,
+        tip:        s.tip  || 'Ask staff about their latest arrivals.',
+      },
+    }));
+  }
+  return getResultCards(4);
+}
+
+function showLocationQuickReply() {
+  quickReplies.innerHTML = '';
+  const btn = document.createElement('button');
+  btn.className = 'quick-reply-btn';
+  btn.textContent = 'Set my location';
+  btn.addEventListener('click', () => {
+    hideQuickReplies();
+    closeChuck();
+    showLocationScreen();
+  });
+  quickReplies.appendChild(btn);
+  quickReplies.classList.remove('hidden');
 }
 
 // ============ CHUCK OPEN / CLOSE ============
@@ -243,8 +436,8 @@ function hideQuickReplies() {
 }
 
 // ============ STORE RESULTS ============
-function showStoreResults() {
-  const items = getResultCards(4);
+function showStoreResults(aiStores) {
+  const items = buildStoreItems(aiStores);
   storeList.innerHTML = '';
   storeCount.textContent = `${items.length} stores`;
   setupMap(items);
@@ -395,6 +588,16 @@ async function sendMessage(text) {
     return;
   }
 
+  // Require location before searching
+  const loc = getSavedLocation ? getSavedLocation() : null;
+  if (!loc || !loc.city) {
+    chuckInput.value = '';
+    addMessage('user', msg);
+    addMessage('chuck', "I need your location to find stores near you — set your city first.");
+    showLocationQuickReply();
+    return;
+  }
+
   chuckInput.value = '';
   chuckSend.disabled = true;
   hideQuickReplies();
@@ -404,50 +607,114 @@ async function sendMessage(text) {
   try {
     const reply = await askChuck(msg);
     hideTyping();
-
     if (!reply) return;
 
-    const showStores = shouldShowStores(reply);
     const cleanText = cleanReply(reply);
+    if (cleanText) addMessage('chuck', cleanText);
 
-    if (cleanText) {
-      addMessage('chuck', cleanText);
-    }
-
-    if (showStores) {
-      showStoreResults();
+    if (shouldShowStores(reply)) {
+      showStoreResults(parseStoresFromReply(reply));
     }
 
   } catch (err) {
     hideTyping();
-    if (err.message === 'NO_API_KEY' || err.message === 'BAD_KEY') {
-      setupModal.classList.remove('hidden');
-      clearApiKey();
+    if (err.message === 'AUTH_REQUIRED') {
+      showAuthModal();
     } else if (err.message === 'RATE_LIMIT') {
       addMessage('chuck', "Give it a sec — hit the rate limit. Try again in a moment.");
     } else {
-      addMessage('chuck', "Having trouble connecting right now. Check your key and try again.");
+      addMessage('chuck', "Having trouble connecting right now. Try again.");
       console.error('Chuck error:', err);
     }
   }
 }
 
-// ============ API KEY SETUP ============
-function saveApiKey() {
-  const key = apiKeyInput.value.trim();
-  if (!key || !key.startsWith('sk-ant')) {
-    apiKeyInput.style.borderColor = 'rgba(239, 68, 68, 0.6)';
-    apiKeyInput.placeholder = 'Must start with sk-ant-...';
-    setTimeout(() => {
-      apiKeyInput.style.borderColor = '';
-      apiKeyInput.placeholder = 'sk-ant-api03-...';
-    }, 2000);
+// ============ AUTH MODAL ============
+let authModalMode = 'login'; // 'login' | 'signup'
+
+function showAuthModal() {
+  $('auth-email').value    = '';
+  $('auth-password').value = '';
+  $('auth-error').style.display = 'none';
+  setupModal.classList.remove('hidden');
+}
+
+function setAuthModalMode(mode) {
+  authModalMode = mode;
+  const isSignup = mode === 'signup';
+  $('auth-modal-title').textContent = isSignup ? 'Create your account' : 'Sign in to use Chuck';
+  $('auth-modal-desc').textContent  = isSignup
+    ? 'Free forever. Save stores, sync across devices.'
+    : 'Sign in to chat with Chuck and access your saved stores.';
+  saveKeyBtn.textContent = isSignup ? 'Create Account' : 'Sign In';
+  $('auth-mode-toggle').textContent = isSignup
+    ? 'Already have an account? Sign in'
+    : "Don't have an account? Sign up free";
+}
+
+async function saveApiKey() {
+  const email    = ($('auth-email').value    || '').trim();
+  const password = ($('auth-password').value || '').trim();
+  const errorEl  = $('auth-error');
+
+  errorEl.style.display = 'none';
+
+  if (!email || !password) {
+    errorEl.textContent   = 'Please fill in both fields.';
+    errorEl.style.display = 'block';
     return;
   }
-  setApiKey(key);
-  setupModal.classList.add('hidden');
-  apiKeyInput.value = '';
-  openChuck();
+
+  saveKeyBtn.disabled    = true;
+  saveKeyBtn.textContent = '…';
+
+  try {
+    const endpoint = authModalMode === 'signup' ? '/api/auth/signup' : '/api/auth/login';
+    const data = await apiRequest(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+
+    setToken(data.token);
+    localStorage.setItem('lookin_email', email);
+    setupModal.classList.add('hidden');
+    openChuck();
+  } catch (err) {
+    errorEl.textContent   = err.message || 'Something went wrong. Try again.';
+    errorEl.style.display = 'block';
+    saveKeyBtn.disabled    = false;
+    setAuthModalMode(authModalMode);
+  }
+}
+
+// ============ SAVE SYNC ============
+function syncSaveToBackend(item) {
+  if (!isAuthenticated()) return;
+  apiRequest('/api/saved', {
+    method: 'POST',
+    body: JSON.stringify({
+      store_id:    item.store.id,
+      store_name:  item.store.name,
+      item_name:   item.name,
+      price:       item.price,
+      category:    item.category,
+      gradient:    item.store.gradient,
+      price_range: item.store.priceRange,
+      distance:    item.store.distance,
+      lat:         item.store.lat  || null,
+      lng:         item.store.lng  || null,
+    }),
+  }).catch(e => console.warn('Backend save failed:', e.message));
+}
+
+function syncUnsaveToBackend(storeId, itemName) {
+  if (!isAuthenticated()) return;
+  apiRequest('/api/saved')
+    .then(rows => {
+      const entry = rows.find(r => r.store_id === storeId && r.item_name === itemName);
+      if (entry) return apiRequest('/api/saved/' + entry.id, { method: 'DELETE' });
+    })
+    .catch(e => console.warn('Backend unsave failed:', e.message));
 }
 
 // ============ CATEGORY CHIPS ============
@@ -524,16 +791,14 @@ async function handlePhotoSelected(file) {
       hideTyping();
       if (!reply) return;
 
-      const showStores = shouldShowStores(reply);
-      const cleanText  = cleanReply(reply);
-      if (cleanText)   addMessage('chuck', cleanText);
-      if (showStores)  showStoreResults();
+      const cleanText = cleanReply(reply);
+      if (cleanText) addMessage('chuck', cleanText);
+      if (shouldShowStores(reply)) showStoreResults(parseStoresFromReply(reply));
 
     } catch (err) {
       hideTyping();
-      if (err.message === 'NO_API_KEY' || err.message === 'BAD_KEY') {
-        setupModal.classList.remove('hidden');
-        clearApiKey();
+      if (err.message === 'AUTH_REQUIRED') {
+        showAuthModal();
       } else if (err.message === 'RATE_LIMIT') {
         addMessage('chuck', "Give it a sec — hit the rate limit. Try again in a moment.");
       } else {
@@ -595,7 +860,7 @@ function renderProfile() {
       if (!meta) return;
       const chip = document.createElement('div');
       chip.className = 'profile-vibe-chip';
-      chip.innerHTML = `<span class="chip-emoji">${meta.emoji}</span>${meta.name}`;
+      chip.textContent = meta.name;
       vibesEl.appendChild(chip);
     });
   } else {
@@ -614,7 +879,7 @@ function renderProfile() {
       card.innerHTML = `
         <div class="profile-celeb-thumb">
           <div class="profile-celeb-bg" style="background:${meta.gradient};width:100%;height:100%;"></div>
-          <div class="profile-celeb-emoji">${meta.emoji}</div>
+          <div class="profile-celeb-initials">${getCelebInitials(meta.name)}</div>
         </div>
         <div class="profile-celeb-name">${meta.name}</div>
         <div class="profile-celeb-style">${meta.style}</div>
@@ -625,12 +890,11 @@ function renderProfile() {
     celebsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:4px 0;">No inspo picked yet.</div>';
   }
 
-  // Budget slider
+  // Budget slider ($10–$800 in $10 steps)
   const budgetEl = $('profile-budget');
-  const savedBudgetIdx = profile.budget
-    ? Math.max(0, BUDGET_TIERS.findIndex(t => t.id === profile.budget))
-    : 1;
-  const initTier = BUDGET_TIERS[savedBudgetIdx];
+  const savedAmount = profile.budgetAmount || tierIdToAmount(profile.budget || 'mid-range');
+  const initTierInfo = dollarToTier(savedAmount);
+  const amountLabel = savedAmount >= 800 ? '$800+' : `$${savedAmount}`;
 
   budgetEl.innerHTML = `
     <div class="budget-slider-wrap">
@@ -638,39 +902,38 @@ function renderProfile() {
         type="range"
         id="budget-range"
         class="budget-range"
-        min="0" max="4" step="1"
-        value="${savedBudgetIdx}"
+        min="10" max="800" step="10"
+        value="${savedAmount}"
       />
       <div class="budget-tier-labels">
         <span>Thrift</span>
         <span>Mid</span>
         <span>Premium</span>
         <span>Designer</span>
-        <span>No Budget</span>
+        <span>∞</span>
       </div>
     </div>
     <div class="budget-selected-display">
-      <span class="budget-selected-name" id="budget-selected-name">${initTier.name}</span>
-      <span class="budget-selected-range" id="budget-selected-range">${initTier.range}</span>
+      <span class="budget-selected-amount" id="budget-selected-amount">${amountLabel}</span>
+      <span class="budget-selected-per-piece">per piece</span>
+      <span class="budget-selected-tier" id="budget-selected-tier">· ${initTierInfo.name}</span>
     </div>
   `;
 
   const rangeInput = $('budget-range');
   updateBudgetSliderFill(rangeInput);
   rangeInput.addEventListener('input', () => {
-    const idx = parseInt(rangeInput.value, 10);
-    const tier = BUDGET_TIERS[idx];
-    $('budget-selected-name').textContent = tier.name;
-    $('budget-selected-range').textContent = tier.range;
+    const amount = parseInt(rangeInput.value, 10);
+    const tierInfo = dollarToTier(amount);
+    $('budget-selected-amount').textContent = amount >= 800 ? '$800+' : `$${amount}`;
+    $('budget-selected-tier').textContent = `· ${tierInfo.name}`;
     updateBudgetSliderFill(rangeInput);
-    saveBudgetTier(idx);
+    saveBudgetAmount(amount);
   });
 
-  // API key display
-  const key = localStorage.getItem('lookin_api_key');
-  $('apikey-display').textContent = key
-    ? key.slice(0, 14) + '••••••••'
-    : 'Not set';
+  // Account display
+  const email = localStorage.getItem('lookin_email');
+  $('apikey-display').textContent = email || (isAuthenticated() ? 'Signed in' : 'Not signed in');
 
   // Location display
   const locData = getSavedLocation ? getSavedLocation() : null;
@@ -683,9 +946,14 @@ function renderProfile() {
 
 // ============ MAPS ============
 function openMapsDirections(store) {
-  const url = (store.lat && store.lng)
-    ? `https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.name)}`;
+  let url;
+  if (store.lat && store.lng) {
+    url = `https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`;
+  } else {
+    const loc = getSavedLocation ? getSavedLocation() : null;
+    const q = loc && loc.city ? `${store.name} ${loc.city}` : store.name;
+    url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+  }
   window.open(url, '_blank');
 }
 
@@ -774,17 +1042,28 @@ function renderSavedStores() {
 }
 
 function updateBudgetSliderFill(input) {
-  const pct = (parseFloat(input.value) / 4) * 100;
-  input.style.setProperty('--pct', `${pct}%`);
+  const pct = ((parseFloat(input.value) - 10) / (800 - 10)) * 100;
+  input.style.setProperty('--pct', `${Math.max(0, Math.min(100, pct))}%`);
 }
 
-function saveBudgetTier(idx) {
-  const tier = BUDGET_TIERS[idx];
-  if (!tier) return;
+function saveBudgetAmount(amount) {
+  const tier = dollarToTier(amount);
   const raw = localStorage.getItem('lookin_profile');
   const profile = raw ? JSON.parse(raw) : { vibes: [], inspo: [], budget: null };
   profile.budget = tier.id;
+  profile.budgetAmount = amount;
   localStorage.setItem('lookin_profile', JSON.stringify(profile));
+}
+
+function getCelebInitials(name) {
+  return name.replace(/[$&'.,]/g, ' ')
+             .split(/[\s,]+/)
+             .filter(w => /[a-zA-Z]/.test(w))
+             .map(w => w.replace(/[^a-zA-Z]/g, '')[0] || '')
+             .filter(Boolean)
+             .slice(0, 2)
+             .join('')
+             .toUpperCase();
 }
 
 function openApiKeyEdit() {
@@ -810,7 +1089,11 @@ function bindEvents() {
   chuckClose.addEventListener('click', closeChuck);
   chuckBackdrop.addEventListener('click', closeChuck);
   saveKeyBtn.addEventListener('click', saveApiKey);
-  apiKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveApiKey(); });
+  $('auth-email')?.addEventListener('keydown',    e => { if (e.key === 'Enter') saveApiKey(); });
+  $('auth-password')?.addEventListener('keydown', e => { if (e.key === 'Enter') saveApiKey(); });
+  $('auth-mode-toggle')?.addEventListener('click', () => {
+    setAuthModalMode(authModalMode === 'login' ? 'signup' : 'login');
+  });
 
   $('nav-home').addEventListener('click', () => {
     closeChuck();

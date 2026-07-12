@@ -355,6 +355,35 @@ input {
   color: #fff;
 }
 
+.store-card-mini-heart {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(8, 11, 15, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  z-index: 2;
+}
+
+.store-card-mini-heart.saved {
+  color: var(--green);
+  background: rgba(74, 222, 128, 0.15);
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.store-card-mini-heart:active { transform: scale(0.88); }
+
 .store-card-mini-body {
   padding: 10px 12px 12px;
 }
@@ -1469,19 +1498,15 @@ input {
 .profile-vibe-chip {
   display: flex;
   align-items: center;
-  gap: 5px;
   padding: 7px 14px;
   border-radius: var(--radius-full);
   background: rgba(124, 58, 237, 0.08);
   border: 1px solid rgba(124, 58, 237, 0.22);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.profile-vibe-chip .chip-emoji {
+  font-family: 'Barlow Condensed', sans-serif;
   font-size: 14px;
-  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
 }
 
 /* Celeb inspo grid */
@@ -1520,13 +1545,18 @@ input {
   height: 100%;
 }
 
-.profile-celeb-emoji {
+.profile-celeb-initials {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
 }
 
 .profile-celeb-name {
@@ -1631,19 +1661,27 @@ input {
 .budget-selected-display {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
   padding-top: 16px;
 }
 
-.budget-selected-name {
-  font-size: 17px;
-  font-weight: 700;
+.budget-selected-amount {
+  font-size: 22px;
+  font-weight: 800;
   color: var(--green);
+  letter-spacing: -0.01em;
 }
 
-.budget-selected-range {
+.budget-selected-per-piece {
   font-size: 13px;
   color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.budget-selected-tier {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 /* Settings list */
@@ -2747,6 +2785,232 @@ input {
   background: rgba(74, 222, 128, 0.15);
   border-color: rgba(74, 222, 128, 0.45);
   color: var(--green);
+}
+
+/* ============ TRENDING OUTFITS ============ */
+.trending-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trending-up-icon {
+  display: flex;
+  align-items: center;
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+.trending-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  margin: 0 -20px;
+  padding: 0 20px 6px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.trending-scroll::-webkit-scrollbar { display: none; }
+
+.trending-card {
+  flex-shrink: 0;
+  width: 142px;
+  height: 192px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.22s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.trending-card:active { transform: scale(0.95); }
+
+.trending-card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.trending-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 55%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+  pointer-events: none;
+}
+
+.trending-card-indicator {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(74, 222, 128, 0.14);
+  border: 1px solid rgba(74, 222, 128, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-full);
+  padding: 3px 8px 3px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.trending-card-heart {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: all 0.18s ease;
+  z-index: 1;
+}
+
+.trending-card-heart.saved {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.22);
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.trending-card-heart:active { transform: scale(0.86); }
+
+.trending-card-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  margin-bottom: 3px;
+}
+
+.trending-card-cat {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ============ TRENDING STORES ============ */
+.trending-store-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #0f1318;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  animation: msgIn 0.3s ease both;
+  margin-bottom: 10px;
+}
+
+.trending-store-row:last-child { margin-bottom: 0; }
+
+.trending-store-row:active {
+  transform: scale(0.98);
+  border-color: rgba(74, 222, 128, 0.28);
+}
+
+.trending-store-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.trending-store-thumb-bg {
+  width: 100%;
+  height: 100%;
+}
+
+.trending-store-hot-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 3px;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(4px);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fb923c;
+  padding: 2px 5px;
+  border-radius: 4px;
+  line-height: 1.35;
+}
+
+.trending-store-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.trending-store-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trending-store-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.trending-store-hot-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fb923c;
+  margin-top: 2px;
+}
+
+.trending-store-open-pill {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(74, 222, 128, 0.1);
+  color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.trending-store-open-pill.closed {
+  background: rgba(107, 114, 128, 0.12);
+  color: var(--text-muted);
+  border-color: rgba(107, 114, 128, 0.25);
 }
 
 /* ============ UTILS ============ */
