@@ -571,7 +571,7 @@ input {
 .chuck-overlay {
   position: absolute;
   inset: 0;
-  z-index: 100;
+  z-index: 210; /* above bottom-nav (200) */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1085,7 +1085,7 @@ input {
 .premium-modal {
   position: absolute;
   inset: 0;
-  z-index: 150;
+  z-index: 230; /* above chuck-overlay (210) */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1292,7 +1292,7 @@ input {
 .modal {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 400; /* above chuck-overlay (210) and premium-modal (230) */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2587,7 +2587,7 @@ input {
 .store-detail-overlay {
   position: absolute;
   inset: 0;
-  z-index: 150;
+  z-index: 220; /* above chuck-overlay (210) */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
