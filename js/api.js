@@ -6,7 +6,7 @@
 const API_BASE = (function () {
   const h = window.location.hostname;
   if (h === 'localhost' || h === '127.0.0.1') return 'http://localhost:3001';
-  return 'https://lookin-api.onrender.com'; // <-- update after deploy
+  return 'https://lookin-api-psrl.onrender.com';
 })();
 
 function getToken()        { return localStorage.getItem('lookin_token'); }
