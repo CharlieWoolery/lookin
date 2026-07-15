@@ -12,7 +12,8 @@ const app = express();
 app.use(cors({
   origin: function (origin, callback) {
     const allowed = [
-      process.env.CORS_ORIGIN,
+      'https://charliewoolery.github.io',  // production
+      process.env.CORS_ORIGIN,             // override via env var if needed
       'http://localhost:8080',
       'http://localhost:3000',
       'http://127.0.0.1:8080',

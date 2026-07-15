@@ -1,10 +1,10 @@
 const express = require('express');
-const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
 // POST /api/chuck  — proxy Anthropic API so the key never touches the browser
-router.post('/', requireAuth, async (req, res) => {
+// No auth required: guest users can chat; the API key stays on the server.
+router.post('/', async (req, res) => {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return res.status(503).json({ error: 'AI service not configured on server' });
