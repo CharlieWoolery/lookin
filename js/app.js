@@ -593,6 +593,7 @@ async function sendMessage(text) {
   }
 
   chuckInput.value = '';
+  resetInputHeight();
   chuckSend.disabled = true;
   hideQuickReplies();
   addMessage('user', msg);
@@ -738,10 +739,26 @@ function bindChips() {
   });
 }
 
+// ============ INPUT AUTO-GROW ============
+const TEXTAREA_MAX_H = 120; // ~5 lines
+
+function autoGrow() {
+  chuckInput.style.height = 'auto';
+  const h = Math.min(chuckInput.scrollHeight, TEXTAREA_MAX_H);
+  chuckInput.style.height = h + 'px';
+  chuckInput.style.overflowY = chuckInput.scrollHeight > TEXTAREA_MAX_H ? 'auto' : 'hidden';
+}
+
+function resetInputHeight() {
+  chuckInput.style.height = '44px';
+  chuckInput.style.overflowY = 'hidden';
+}
+
 // ============ INPUT ENABLE/DISABLE ============
 function bindInput() {
   chuckInput.addEventListener('input', () => {
     chuckSend.disabled = chuckInput.value.trim().length === 0;
+    autoGrow();
   });
 
   chuckInput.addEventListener('keydown', e => {

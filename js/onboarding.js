@@ -256,22 +256,20 @@ function goToStep(next) {
   const from = document.getElementById(`ob-step-${currentStep}`);
   const to   = document.getElementById(`ob-step-${next}`);
 
-  // Prepare incoming step just off-screen right, no transition
+  // Position incoming step fully off-screen right with no transition
   to.style.transition = 'none';
   to.style.transform  = 'translateX(100%)';
   to.style.opacity    = '1';
   to.classList.add('active');
 
-  // Force reflow so transition doesn't skip
-  to.offsetHeight;
+  to.offsetHeight; // force reflow
 
-  // Now slide both
-  const dur = '0.42s cubic-bezier(0.32, 0.72, 0, 1)';
-  from.style.transition = `transform ${dur}, opacity 0.3s ease`;
-  to.style.transition   = `transform ${dur}, opacity 0.3s ease`;
+  const dur = '0.25s ease';
+  from.style.transition = `transform ${dur}, opacity 0.2s ease`;
+  to.style.transition   = `transform ${dur}, opacity 0.2s ease`;
 
-  from.style.transform = 'translateX(-30%)';
-  from.style.opacity   = '0.2';
+  from.style.transform = 'translateX(-100%)'; // fully off-screen — no overlap
+  from.style.opacity   = '0';
   to.style.transform   = 'translateX(0)';
 
   setTimeout(() => {
@@ -280,7 +278,7 @@ function goToStep(next) {
     to.style.transition = '';
     currentStep = next;
     updateTopbar();
-  }, 430);
+  }, 260);
 }
 
 function goBack() {
@@ -288,16 +286,17 @@ function goBack() {
   const from = document.getElementById(`ob-step-${currentStep}`);
   const to   = document.getElementById(`ob-step-${currentStep - 1}`);
 
+  // Position returning step fully off-screen left with no transition
   to.style.transition = 'none';
-  to.style.transform  = 'translateX(-30%)';
-  to.style.opacity    = '0.2';
+  to.style.transform  = 'translateX(-100%)';
+  to.style.opacity    = '1';
   to.classList.add('active');
 
-  to.offsetHeight;
+  to.offsetHeight; // force reflow
 
-  const dur = '0.42s cubic-bezier(0.32, 0.72, 0, 1)';
-  from.style.transition = `transform ${dur}, opacity 0.3s ease`;
-  to.style.transition   = `transform ${dur}, opacity 0.3s ease`;
+  const dur = '0.25s ease';
+  from.style.transition = `transform ${dur}, opacity 0.2s ease`;
+  to.style.transition   = `transform ${dur}, opacity 0.2s ease`;
 
   from.style.transform = 'translateX(100%)';
   from.style.opacity   = '0';
@@ -310,7 +309,7 @@ function goBack() {
     to.style.transition = '';
     currentStep = currentStep - 1;
     updateTopbar();
-  }, 430);
+  }, 260);
 }
 
 // ---- Progress Bar ----
