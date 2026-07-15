@@ -1379,6 +1379,25 @@ input {
   line-height: 1.5;
 }
 
+.modal-guest-btn {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.modal-guest-btn:hover {
+  border-color: rgba(255,255,255,0.35);
+  color: var(--text);
+}
+
 /* ============ PROFILE SCREEN ============ */
 .profile-screen {
   position: absolute;

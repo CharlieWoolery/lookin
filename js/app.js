@@ -695,6 +695,12 @@ async function saveApiKey() {
   }
 }
 
+function continueAsGuest() {
+  signInLocally('');
+  setupModal.classList.add('hidden');
+  openChuck();
+}
+
 // ============ SAVE SYNC ============
 function syncSaveToBackend(item) {
   if (!isAuthenticated()) return;
@@ -1102,6 +1108,7 @@ function bindEvents() {
   $('auth-mode-toggle')?.addEventListener('click', () => {
     setAuthModalMode(authModalMode === 'login' ? 'signup' : 'login');
   });
+  $('guest-btn')?.addEventListener('click', continueAsGuest);
 
   $('nav-home').addEventListener('click', () => {
     closeChuck();
