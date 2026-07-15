@@ -696,6 +696,7 @@ async function saveApiKey() {
 }
 
 function continueAsGuest() {
+  localStorage.setItem('lookin_guest', 'true');
   signInLocally('');
   setupModal.classList.add('hidden');
   openChuck();
