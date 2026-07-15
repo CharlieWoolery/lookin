@@ -1383,19 +1383,18 @@ input {
   display: block;
   width: 100%;
   margin-top: 14px;
-  padding: 10px;
+  padding: 11px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1.5px solid #4ade80;
   border-radius: 10px;
-  color: var(--text-muted);
-  font-size: 13px;
+  color: #4ade80;
+  font-size: 14px;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition: background 0.2s;
 }
 .modal-guest-btn:hover {
-  border-color: rgba(255,255,255,0.35);
-  color: var(--text);
+  background: rgba(74, 222, 128, 0.08);
 }
 
 /* ============ PROFILE SCREEN ============ */
