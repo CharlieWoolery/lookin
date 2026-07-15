@@ -604,6 +604,7 @@ input {
   border-top: 1px solid rgba(74, 222, 128, 0.15);
   border-radius: 24px 24px 0 0;
   height: 88dvh;
+  max-height: 88dvh;
   display: flex;
   flex-direction: column;
   transform: translateY(0);
