@@ -1,7 +1,7 @@
 // ============ LOOKIN — Backend API Client ============
-//
-// After deploying to Render/Railway, replace the production URL below
-// with your actual service URL.
+
+// Wipe the old key-in-localStorage approach — backend holds the key now.
+localStorage.removeItem('lookin_api_key');
 
 const API_BASE = (function () {
   const h = window.location.hostname;
@@ -20,21 +20,33 @@ async function apiRequest(path, options) {
   const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
   if (token) headers['Authorization'] = 'Bearer ' + token;
 
-  const res = await fetch(API_BASE + path, Object.assign({}, options, { headers }));
-  const data = await res.json().catch(() => ({}));
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 65000); // 65s — covers Render cold start
 
-  if (res.status === 401) {
-    clearToken();
-    throw new Error('AUTH_REQUIRED');
+  try {
+    const res = await fetch(API_BASE + path, Object.assign({}, options, { headers, signal: controller.signal }));
+    const data = await res.json().catch(() => ({}));
+
+    if (res.status === 401) {
+      clearToken();
+      throw new Error('AUTH_REQUIRED');
+    }
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  } finally {
+    clearTimeout(timer);
   }
-  if (!res.ok) throw new Error(data.error || 'Request failed');
-  return data;
+}
+
+// Pre-warm the Render instance so it's ready when the user opens Chuck.
+function warmBackend() {
+  fetch(API_BASE + '/health').catch(() => {});
 }
 
 // ── Local auth fallback (used when backend is unreachable) ──
 
 function isNetworkError(err) {
-  return err instanceof TypeError || err.name === 'TypeError';
+  return err instanceof TypeError || err.name === 'TypeError' || err.name === 'AbortError';
 }
 
 function signInLocally(email) {

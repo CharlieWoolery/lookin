@@ -76,6 +76,7 @@ function init() {
   populateInspoGrid();
   bindEvents();
   initLocation();
+  warmBackend(); // wake Render before user opens Chuck
 
   if (!hasApiKey()) {
     setupModal.classList.remove('hidden');
@@ -615,6 +616,8 @@ async function sendMessage(text) {
       showAuthModal();
     } else if (err.message === 'RATE_LIMIT') {
       addMessage('chuck', "Give it a sec — hit the rate limit. Try again in a moment.");
+    } else if (isNetworkError(err)) {
+      addMessage('chuck', "Server's waking up — usually takes 30 seconds on first load. Try again in a moment.");
     } else {
       addMessage('chuck', "Having trouble connecting right now. Try again.");
       console.error('Chuck error:', err);
