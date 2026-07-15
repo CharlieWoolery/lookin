@@ -241,11 +241,11 @@ const CELEB_META = {
 };
 
 const BUDGET_TIERS = [
-  { id: 'thrift',    name: 'Thrift',    range: 'Under $30' },
+  { id: 'thrift',    name: 'Thrift',    range: '$10 – $30' },
   { id: 'mid-range', name: 'Mid Range', range: '$30 – $100' },
-  { id: 'premium',   name: 'Premium',   range: '$100 – $300' },
-  { id: 'designer',  name: 'Designer',  range: '$300 – $800' },
-  { id: 'no-budget', name: 'No Budget', range: '$800+' },
+  { id: 'premium',   name: 'Premium',   range: '$100 – $250' },
+  { id: 'designer',  name: 'Designer',  range: '$250 – $500' },
+  { id: 'no-budget', name: 'No Budget', range: '$500+' },
 ];
 
 // ============ TRENDING OUTFITS ============
@@ -319,15 +319,15 @@ const TRENDING_STORES_CONFIG = [
 // ============ BUDGET UTILS ============
 function dollarToTier(amount) {
   amount = Number(amount) || 60;
-  if (amount < 30)   return { id: 'thrift',    name: 'Thrift',    range: 'Under $30' };
+  if (amount < 30)   return { id: 'thrift',    name: 'Thrift',    range: '$10–$30' };
   if (amount <= 100) return { id: 'mid-range', name: 'Mid Range', range: '$30–$100' };
-  if (amount <= 300) return { id: 'premium',   name: 'Premium',   range: '$100–$300' };
-  if (amount < 800)  return { id: 'designer',  name: 'Designer',  range: '$300–$800' };
-  return { id: 'no-budget', name: 'No Budget', range: '$800+' };
+  if (amount <= 250) return { id: 'premium',   name: 'Premium',   range: '$100–$250' };
+  if (amount < 500)  return { id: 'designer',  name: 'Designer',  range: '$250–$500' };
+  return { id: 'no-budget', name: 'No Budget', range: '$500+' };
 }
 
 function tierIdToAmount(tierId) {
-  const map = { 'thrift': 20, 'mid-range': 60, 'premium': 180, 'designer': 450, 'no-budget': 800 };
+  const map = { 'thrift': 20, 'mid-range': 60, 'premium': 175, 'designer': 370, 'no-budget': 500 };
   return map[tierId] || 60;
 }
 

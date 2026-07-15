@@ -2763,46 +2763,77 @@ input {
   line-height: 1.5;
 }
 
-.store-detail-actions {
+.store-detail-top-icons {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
+  flex-shrink: 0;
 }
-
-.store-detail-directions-btn {
-  flex: 1;
-  background: var(--green);
-  color: #000;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 13px;
-  border-radius: var(--radius-full);
-  text-align: center;
-  letter-spacing: 0.02em;
-  transition: filter 0.15s ease;
-}
-
-.store-detail-directions-btn:active { filter: brightness(0.9); }
 
 .store-detail-heart-btn {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--surface);
   border: 1px solid var(--border);
-  font-size: 20px;
+  font-size: 18px;
   color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.18s ease;
+  cursor: pointer;
 }
 
 .store-detail-heart-btn.saved {
   background: rgba(74, 222, 128, 0.15);
   border-color: rgba(74, 222, 128, 0.45);
   color: var(--green);
+}
+
+.store-detail-btn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.store-detail-chuck-btn {
+  width: 100%;
+  background: var(--green);
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px;
+  border-radius: var(--radius-full);
+  text-align: center;
+  letter-spacing: 0.02em;
+  transition: filter 0.15s ease;
+  cursor: pointer;
+  border: none;
+}
+.store-detail-chuck-btn:active { filter: brightness(0.9); }
+
+.store-detail-website-btn,
+.store-detail-directions-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px;
+  border-radius: var(--radius-full);
+  text-align: center;
+  letter-spacing: 0.01em;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: pointer;
+}
+.store-detail-website-btn:active,
+.store-detail-directions-btn:active {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.4);
 }
 
 /* ============ TRENDING OUTFITS ============ */

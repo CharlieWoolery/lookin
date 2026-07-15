@@ -504,10 +504,6 @@ function showStoreDetail(item) {
     <div class="store-detail-backdrop" id="store-detail-backdrop"></div>
     <div class="store-detail-panel">
       <div class="store-detail-handle"></div>
-      <div class="store-detail-thumb">
-        <div class="store-detail-thumb-bg" style="background:${store.gradient}"></div>
-        <span class="store-detail-status-badge ${store.open ? 'open' : 'closed'}">${store.open ? 'OPEN' : 'CLOSED'}</span>
-      </div>
       <div class="store-detail-body">
         <div class="store-detail-top-row">
           <div>
@@ -515,26 +511,18 @@ function showStoreDetail(item) {
             <div class="store-detail-meta">
               <span>${store.distance}</span>
               <span class="meta-dot"></span>
-              <span>${store.category}</span>
-              <span class="meta-dot"></span>
-              <span>★ ${store.rating}</span>
-              <span class="meta-dot"></span>
               <span>${store.priceRange}</span>
             </div>
           </div>
-          <button class="store-detail-close" id="store-detail-close">✕</button>
+          <div class="store-detail-top-icons">
+            <button class="store-detail-heart-btn ${alreadySaved ? 'saved' : ''}" id="store-detail-heart">${alreadySaved ? '♥' : '♡'}</button>
+            <button class="store-detail-close" id="store-detail-close">✕</button>
+          </div>
         </div>
-        <div class="store-detail-item-row">
-          <span class="store-detail-item-name">${item.name}</span>
-          <span class="store-detail-item-price">${item.price}</span>
-        </div>
-        <div class="store-detail-tip-box">
-          <div class="store-detail-tip-label">Chuck's Tip</div>
-          <div class="store-detail-tip-text">${store.tip || 'Ask staff for the latest arrivals.'}</div>
-        </div>
-        <div class="store-detail-actions">
-          <button class="store-detail-directions-btn" id="store-detail-dir">Get Directions</button>
-          <button class="store-detail-heart-btn ${alreadySaved ? 'saved' : ''}" id="store-detail-heart">${alreadySaved ? '♥' : '♡'}</button>
+        <div class="store-detail-btn-stack">
+          <button class="store-detail-chuck-btn" id="store-detail-chuck">Ask Chuck about it</button>
+          <button class="store-detail-website-btn" id="store-detail-website">Visit website</button>
+          <button class="store-detail-directions-btn" id="store-detail-dir">Get directions</button>
         </div>
       </div>
     </div>
@@ -548,6 +536,19 @@ function showStoreDetail(item) {
   overlay.querySelector('#store-detail-backdrop').addEventListener('click', closeStoreDetail);
   overlay.querySelector('#store-detail-close').addEventListener('click', closeStoreDetail);
 
+  overlay.querySelector('#store-detail-chuck').addEventListener('click', () => {
+    closeStoreDetail();
+    openChuck();
+    setTimeout(() => {
+      hideQuickReplies();
+      sendMessage('Tell me about ' + store.name + ' — what should I check out there?');
+    }, 480);
+  });
+
+  overlay.querySelector('#store-detail-website').addEventListener('click', () => {
+    window.open('https://www.google.com/search?q=' + encodeURIComponent(store.name + ' official website'), '_blank');
+  });
+
   overlay.querySelector('#store-detail-dir').addEventListener('click', () => {
     openMapsDirections(store);
   });
@@ -560,14 +561,6 @@ function showStoreDetail(item) {
     } else {
       unsaveStore(store.id, item.name);
     }
-    // sync the mini heart on the card
-    storeList.querySelectorAll('.result-card').forEach(c => {
-      if (c.querySelector('.result-card-store')?.textContent === store.name &&
-          c.querySelector('.result-card-item')?.textContent === item.name) {
-        const h = c.querySelector('.card-mini-heart');
-        if (h) { h.classList.toggle('saved', isSaved); h.textContent = isSaved ? '♥' : '♡'; }
-      }
-    });
   });
 }
 
@@ -905,11 +898,11 @@ function renderProfile() {
     celebsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:4px 0;">No inspo picked yet.</div>';
   }
 
-  // Budget slider ($10–$800 in $10 steps)
+  // Budget slider ($10–$500 in $10 steps)
   const budgetEl = $('profile-budget');
-  const savedAmount = profile.budgetAmount || tierIdToAmount(profile.budget || 'mid-range');
+  const savedAmount = Math.min(profile.budgetAmount || tierIdToAmount(profile.budget || 'mid-range'), 500);
   const initTierInfo = dollarToTier(savedAmount);
-  const amountLabel = savedAmount >= 800 ? '$800+' : `$${savedAmount}`;
+  const amountLabel = savedAmount >= 500 ? '$500+' : `$${savedAmount}`;
 
   budgetEl.innerHTML = `
     <div class="budget-slider-wrap">
@@ -917,7 +910,7 @@ function renderProfile() {
         type="range"
         id="budget-range"
         class="budget-range"
-        min="10" max="800" step="10"
+        min="10" max="500" step="10"
         value="${savedAmount}"
       />
       <div class="budget-tier-labels">
@@ -940,7 +933,7 @@ function renderProfile() {
   rangeInput.addEventListener('input', () => {
     const amount = parseInt(rangeInput.value, 10);
     const tierInfo = dollarToTier(amount);
-    $('budget-selected-amount').textContent = amount >= 800 ? '$800+' : `$${amount}`;
+    $('budget-selected-amount').textContent = amount >= 500 ? '$500+' : `$${amount}`;
     $('budget-selected-tier').textContent = `· ${tierInfo.name}`;
     updateBudgetSliderFill(rangeInput);
     saveBudgetAmount(amount);
@@ -1057,7 +1050,7 @@ function renderSavedStores() {
 }
 
 function updateBudgetSliderFill(input) {
-  const pct = ((parseFloat(input.value) - 10) / (800 - 10)) * 100;
+  const pct = ((parseFloat(input.value) - 10) / (500 - 10)) * 100;
   input.style.setProperty('--pct', `${Math.max(0, Math.min(100, pct))}%`);
 }
 
