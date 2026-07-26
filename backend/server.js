@@ -9,6 +9,8 @@ const chuckRoutes = require('./routes/chuck');
 const app = express();
 
 const ALLOWED_ORIGINS = [
+  'https://getlookin.app',
+  'https://www.getlookin.app',
   'https://charliewoolery.github.io',
   'http://localhost:8080',
   'http://localhost:3000',
