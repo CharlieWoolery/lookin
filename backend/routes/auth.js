@@ -28,14 +28,20 @@ router.post('/signup', async (req, res) => {
   }
 
   try {
+    const normalised = email.toLowerCase().trim();
+    console.log('[signup] attempt:', normalised);
+    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(normalised);
+    console.log('[signup] existing row:', existing);
     const hash = await bcrypt.hash(password, 12);
     const stmt = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)');
-    const result = stmt.run(email.toLowerCase().trim(), hash);
+    const result = stmt.run(normalised, hash);
 
-    const user = { id: Number(result.lastInsertRowid), email: email.toLowerCase().trim() };
+    console.log('[signup] inserted row id:', result.lastInsertRowid);
+    const user = { id: Number(result.lastInsertRowid), email: normalised };
     res.status(201).json({ token: makeToken(user), email: user.email });
   } catch (err) {
     if (err.message && err.message.includes('UNIQUE')) {
+      console.log('[signup] UNIQUE violation for:', email.toLowerCase().trim(), '| err:', err.message);
       return res.status(409).json({ error: 'An account with that email already exists' });
     }
     console.error('Signup error:', err);
