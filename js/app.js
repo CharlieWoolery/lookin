@@ -161,11 +161,16 @@ function populateStores() {
 function populateInspoGrid() {
   inspoGrid.innerHTML = '';
   INSPO_CARDS.forEach(card => {
+    const slug = card.vibe.toLowerCase().replace(/\s+/g, '-');
+    const imgUrl = VIBE_IMAGES && VIBE_IMAGES[slug];
+    const bgValue = imgUrl
+      ? `url('${imgUrl}') center/cover, ${card.gradient}`
+      : card.gradient;
     const el = document.createElement('div');
     el.className = 'inspo-card';
     el.innerHTML = `
       <div class="inspo-card-inner">
-        <div class="inspo-card-bg" style="background: ${card.gradient};">
+        <div class="inspo-card-bg" style="background: ${bgValue};">
           <div class="inspo-card-decor" style="
             background: ${card.decorColor};
             width: ${card.decorSize};

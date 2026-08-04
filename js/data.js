@@ -316,6 +316,23 @@ const TRENDING_STORES_CONFIG = [
   { id: 7, hotLabel: 'Most visited this week' },
 ];
 
+// ============ VIBE IMAGES (Unsplash) ============
+const VIBE_IMAGES = {
+  'old-money':       'https://images.unsplash.com/photo-Q2Us4yAhe5g?w=600&q=75&fit=crop',
+  'streetwear':      'https://images.unsplash.com/photo-bO3S03I2Aw8?w=600&q=75&fit=crop',
+  'vintage':         'https://images.unsplash.com/photo-Fzde_6ITjkw?w=600&q=75&fit=crop',
+  'california':      'https://images.unsplash.com/photo-3fpAmmQ-WXA?w=600&q=75&fit=crop',
+  'avant-garde':     'https://images.unsplash.com/photo-CQDkSdPOzYY?w=600&q=75&fit=crop',
+  'gorpcore':        'https://images.unsplash.com/photo-vw4MJ04Szv4?w=600&q=75&fit=crop',
+  'y2k':             'https://images.unsplash.com/photo-nimElTcTNyY?w=600&q=75&fit=crop',
+  'dark-academia':   'https://images.unsplash.com/photo-Vv6SGowYvHI?w=600&q=75&fit=crop',
+  'coastal-grandma': 'https://images.unsplash.com/photo-M3YA3M4bRI8?w=600&q=75&fit=crop',
+  'workwear':        'https://images.unsplash.com/photo-o3gcNSIX3yg?w=600&q=75&fit=crop',
+  'grunge':          'https://images.unsplash.com/photo-SmIlY2uAHo8?w=600&q=75&fit=crop',
+  'preppy':          'https://images.unsplash.com/photo-H-4zc2LYhv4?w=600&q=75&fit=crop',
+  'bohemian':        'https://images.unsplash.com/photo-Mh709bEydUY?w=600&q=75&fit=crop',
+};
+
 // ============ BUDGET UTILS ============
 function dollarToTier(amount) {
   amount = Number(amount) || 60;

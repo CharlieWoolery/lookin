@@ -163,7 +163,7 @@ function buildVibeGrid() {
     card.className = 'vibe-card';
     card.dataset.id = v.id;
     card.innerHTML = `
-      <div class="vibe-card-bg" style="background:${v.gradient};"></div>
+      <div class="vibe-card-bg" style="background: url('${VIBE_IMAGES[v.id]}') center/cover, ${v.gradient};"></div>
       <div class="vibe-card-content">
         <div class="vibe-card-name">${v.name}</div>
         <div class="vibe-card-desc">${v.desc}</div>
