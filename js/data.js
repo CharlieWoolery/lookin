@@ -316,21 +316,21 @@ const TRENDING_STORES_CONFIG = [
   { id: 7, hotLabel: 'Most visited this week' },
 ];
 
-// ============ VIBE IMAGES (Unsplash) ============
+// ============ VIBE IMAGES (Unsplash — free license, CDN IDs verified) ============
 const VIBE_IMAGES = {
-  'old-money':       'https://images.unsplash.com/photo-Q2Us4yAhe5g?w=600&q=75&fit=crop',
-  'streetwear':      'https://images.unsplash.com/photo-bO3S03I2Aw8?w=600&q=75&fit=crop',
-  'vintage':         'https://images.unsplash.com/photo-Fzde_6ITjkw?w=600&q=75&fit=crop',
-  'california':      'https://images.unsplash.com/photo-3fpAmmQ-WXA?w=600&q=75&fit=crop',
-  'avant-garde':     'https://images.unsplash.com/photo-CQDkSdPOzYY?w=600&q=75&fit=crop',
-  'gorpcore':        'https://images.unsplash.com/photo-vw4MJ04Szv4?w=600&q=75&fit=crop',
-  'y2k':             'https://images.unsplash.com/photo-nimElTcTNyY?w=600&q=75&fit=crop',
-  'dark-academia':   'https://images.unsplash.com/photo-Vv6SGowYvHI?w=600&q=75&fit=crop',
-  'coastal-grandma': 'https://images.unsplash.com/photo-M3YA3M4bRI8?w=600&q=75&fit=crop',
-  'workwear':        'https://images.unsplash.com/photo-o3gcNSIX3yg?w=600&q=75&fit=crop',
-  'grunge':          'https://images.unsplash.com/photo-SmIlY2uAHo8?w=600&q=75&fit=crop',
-  'preppy':          'https://images.unsplash.com/photo-H-4zc2LYhv4?w=600&q=75&fit=crop',
-  'bohemian':        'https://images.unsplash.com/photo-Mh709bEydUY?w=600&q=75&fit=crop',
+  'old-money':       'https://images.unsplash.com/photo-1779406165624-10a5bfee0450?w=400&q=80&fit=crop',
+  'streetwear':      'https://images.unsplash.com/photo-1780764868345-99a0540939d0?w=400&q=80&fit=crop',
+  'vintage':         'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&q=80&fit=crop',
+  'california':      'https://images.unsplash.com/photo-1570258028946-b9a55411d117?w=400&q=80&fit=crop',
+  'avant-garde':     'https://images.unsplash.com/photo-1744962486534-24809987f991?w=400&q=80&fit=crop',
+  'gorpcore':        'https://images.unsplash.com/photo-1636447670364-9dc6c2a0f489?w=400&q=80&fit=crop',
+  'y2k':             'https://images.unsplash.com/photo-1747171033982-00ab4af07403?w=400&q=80&fit=crop',
+  'dark-academia':   'https://images.unsplash.com/photo-1636572644856-219441002f7f?w=400&q=80&fit=crop',
+  'coastal-grandma': 'https://images.unsplash.com/photo-1673790867543-fa581c3400f7?w=400&q=80&fit=crop',
+  'workwear':        'https://images.unsplash.com/photo-1590650589327-3f67c43ad8a2?w=400&q=80&fit=crop',
+  'grunge':          'https://images.unsplash.com/photo-1632958978877-69406b688b11?w=400&q=80&fit=crop',
+  'preppy':          'https://images.unsplash.com/photo-1542776575-f1623249ce85?w=400&q=80&fit=crop',
+  'bohemian':        'https://images.unsplash.com/photo-1603391647115-9d02ab070e02?w=400&q=80&fit=crop',
 };
 
 // ============ BUDGET UTILS ============
