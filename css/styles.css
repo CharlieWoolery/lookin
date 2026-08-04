@@ -3083,3 +3083,73 @@ input {
     border-radius: 0;
   }
 }
+
+/* ============ TABLET (768px+) ============ */
+@media (min-width: 768px) {
+  body {
+    background:
+      radial-gradient(ellipse 80% 45% at 50% 0%, rgba(74, 222, 128, 0.05) 0%, transparent 100%),
+      radial-gradient(ellipse 70% 40% at 50% 100%, rgba(124, 58, 237, 0.06) 0%, transparent 100%),
+      #03060a;
+  }
+
+  .app {
+    max-width: 490px;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 20px 80px rgba(0, 0, 0, 0.85),
+      0 0 60px rgba(74, 222, 128, 0.04);
+  }
+}
+
+/* ============ DESKTOP (1024px+) ============ */
+@media (min-width: 1024px) {
+  body {
+    background:
+      radial-gradient(ellipse 60% 55% at 50% -5%, rgba(74, 222, 128, 0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 50% 105%, rgba(124, 58, 237, 0.08) 0%, transparent 70%),
+      #03060a;
+  }
+
+  .app {
+    max-width: 520px;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 32px 100px rgba(0, 0, 0, 0.9),
+      0 0 80px rgba(74, 222, 128, 0.05),
+      -60px 0 140px rgba(74, 222, 128, 0.015),
+      60px 0 140px rgba(124, 58, 237, 0.02);
+  }
+
+  /* Chuck: wider message bubbles */
+  .message-bubble {
+    max-width: 84%;
+  }
+
+  /* Chuck: more breathing room in messages area */
+  .chuck-messages {
+    padding: 20px 28px;
+    gap: 16px;
+  }
+
+  /* Chuck: wider padding in input and results */
+  .chuck-input-area {
+    padding: 12px 28px max(16px, env(safe-area-inset-bottom));
+  }
+
+  .chuck-header-row {
+    padding: 12px 28px 14px;
+  }
+
+  .store-results-header {
+    padding: 12px 28px 10px;
+  }
+
+  .store-results-list {
+    padding: 0 28px 12px;
+  }
+
+  .quick-replies {
+    padding: 6px 28px 10px;
+  }
+}
